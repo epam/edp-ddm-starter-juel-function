@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class SystemUserJuelFunction extends AbstractApplicationContextAwareJuelFunction {
 
   private static final String SYSTEM_USER_FUNCTION_NAME = "system_user";
-  public static final String SYSTEM_USER_OBJ_VAR_NAME = "system_user-juel-function-result-object";
+  public static final String SYSTEM_USER_OBJ_VAR_NAME = "system-user-juel-function-result-object";
 
   protected SystemUserJuelFunction() {
     super(SYSTEM_USER_FUNCTION_NAME);
