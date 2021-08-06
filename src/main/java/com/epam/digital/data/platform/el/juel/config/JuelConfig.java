@@ -20,10 +20,10 @@ public class JuelConfig {
 
   @Bean
   public Keycloak systemUserKeycloak(
-      @Value("${system-user.keycloak.url}") String serverUrl,
-      @Value("${system-user.keycloak.realm}") String realm,
-      @Value("${system-user.keycloak.client-id}") String clientId,
-      @Value("${system-user.keycloak.client-secret}") String clientSecret) {
+      @Value("${keycloak.url}") String serverUrl,
+      @Value("${keycloak.system-user.realm}") String realm,
+      @Value("${keycloak.system-user.client-id}") String clientId,
+      @Value("${keycloak.system-user.client-secret}") String clientSecret) {
     return KeycloakBuilder.builder()
         .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
         .clientSecret(clientSecret)
