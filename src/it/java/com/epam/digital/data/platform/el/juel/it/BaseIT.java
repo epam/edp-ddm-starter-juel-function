@@ -59,4 +59,9 @@ public abstract class BaseIT {
   protected CephKeyProvider cephKeyProvider() {
     return cephKeyProvider;
   }
+
+  protected static String getContentFromJson(String jsonPath) throws IOException {
+    return new String(ByteStreams.toByteArray(Objects
+        .requireNonNull(BaseIT.class.getResourceAsStream(jsonPath))));
+  }
 }
