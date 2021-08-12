@@ -15,7 +15,7 @@ public class SystemUserJuelFunction extends AbstractApplicationContextAwareJuelF
   private static final String SYSTEM_USER_FUNCTION_NAME = "system_user";
   public static final String SYSTEM_USER_OBJ_VAR_NAME = "system-user-juel-function-result-object";
 
-  protected SystemUserJuelFunction() {
+  public SystemUserJuelFunction() {
     super(SYSTEM_USER_FUNCTION_NAME);
   }
 
