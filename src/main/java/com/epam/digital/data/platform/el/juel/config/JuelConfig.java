@@ -1,10 +1,13 @@
 package com.epam.digital.data.platform.el.juel.config;
 
 import com.epam.digital.data.platform.el.juel.AbstractApplicationContextAwareJuelFunction;
+import com.epam.digital.data.platform.el.juel.keycloak.KeycloakProvider;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 public class JuelConfig {
 
   @Bean
+  @ConditionalOnProperty(prefix = "keycloak", name = {"url", "system-user.realm"})
   public Keycloak systemUserKeycloak(
       @Value("${keycloak.url}") String serverUrl,
       @Value("${keycloak.system-user.realm}") String realm,
@@ -31,5 +35,11 @@ public class JuelConfig {
         .clientId(clientId)
         .realm(realm)
         .build();
+  }
+
+  @Bean
+  @ConditionalOnBean(Keycloak.class)
+  public KeycloakProvider keycloakProvider(Keycloak systemUserKeycloak) {
+    return new KeycloakProvider(systemUserKeycloak);
   }
 }
