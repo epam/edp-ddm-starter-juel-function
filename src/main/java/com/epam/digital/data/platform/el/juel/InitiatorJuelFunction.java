@@ -1,9 +1,9 @@
 package com.epam.digital.data.platform.el.juel;
 
+import com.epam.digital.data.platform.dataaccessor.initiator.InitiatorVariablesAccessor;
+import com.epam.digital.data.platform.dataaccessor.initiator.InitiatorVariablesReadAccessor;
 import com.epam.digital.data.platform.el.juel.dto.UserDto;
-import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
-import org.camunda.bpm.engine.impl.core.instance.CoreExecution;
-import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class InitiatorJuelFunction extends AbstractApplicationContextAwareJuelFunction {
-
-  public static final String INITIATOR_TOKEN_VAR_NAME = "initiator_access_token";
 
   private static final String JUEL_FUNCTION_NAME = "initiator";
   private static final String INITIATOR_OBJ_VAR_NAME = "initiator-juel-function-result-object";
@@ -27,39 +25,35 @@ public class InitiatorJuelFunction extends AbstractApplicationContextAwareJuelFu
    * Static JUEL function that resolves an {@link UserDto} object of the business-process initiator
    * <p>
    * Checks if there already is an object with initiator info in Camunda execution context and
-   * returns it if it exists or else reads an initiator userName and token (if it still exist) from
+   * returns it if it exists or else reads an initiator userName and token (if it still exists) from
    * initiator variables, parses token claims and creates an {@link UserDto} object with all found
    * data
    *
    * @return initiator {@link UserDto} representation
    */
   public static UserDto initiator() {
-    final var execution = getExecution();
+    final var variableAccessor = getVariableAccessor();
 
-    var storedObject = (UserDto) execution.getVariable(INITIATOR_OBJ_VAR_NAME);
-
+    UserDto storedObject = variableAccessor.getVariable(INITIATOR_OBJ_VAR_NAME);
     if (storedObject != null) {
       return storedObject;
     }
 
-    var initiatorUserName = getInitiatorUserName(execution);
-    var initiatorAccessToken = getInitiatorAccessToken(execution);
-    var claims = initiatorAccessToken != null ? parseClaims(initiatorAccessToken) : null;
+    final var initiatorVariablesReadAccessor = initiatorVariablesReadAccessor();
 
-    var userDto = new UserDto(initiatorUserName, initiatorAccessToken, claims);
-    execution.removeVariable(INITIATOR_OBJ_VAR_NAME);
-    execution.setVariableLocalTransient(INITIATOR_OBJ_VAR_NAME, userDto);
+    var initiatorUserName = initiatorVariablesReadAccessor.getInitiatorName();
+    var initiatorAccessToken = initiatorVariablesReadAccessor.getInitiatorAccessToken();
+    var claims = initiatorAccessToken.map(AbstractApplicationContextAwareJuelFunction::parseClaims);
+    var userDto = new UserDto(initiatorUserName.orElse(null), initiatorAccessToken.orElse(null),
+        claims.orElse(null));
+
+    variableAccessor.removeVariable(INITIATOR_OBJ_VAR_NAME);
+    variableAccessor.setVariableTransient(INITIATOR_OBJ_VAR_NAME, userDto);
     return userDto;
   }
 
-  private static String getInitiatorAccessToken(CoreExecution execution) {
-    return (String) execution.getVariable(INITIATOR_TOKEN_VAR_NAME);
-  }
-
-  private static String getInitiatorUserName(CoreExecution execution) {
-    var executionEntity = (ExecutionEntity) execution;
-    final var initiatorVarName = (String) executionEntity.getProcessDefinition()
-        .getProperty(BpmnParse.PROPERTYNAME_INITIATOR_VARIABLE_NAME);
-    return (String) execution.getVariable(initiatorVarName);
+  private static InitiatorVariablesReadAccessor initiatorVariablesReadAccessor() {
+    var initiatorAccessTokenVariable = getBean(InitiatorVariablesAccessor.class);
+    return initiatorAccessTokenVariable.from((DelegateExecution) getExecution());
   }
 }

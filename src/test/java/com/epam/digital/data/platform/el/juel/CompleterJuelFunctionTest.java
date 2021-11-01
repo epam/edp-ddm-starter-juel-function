@@ -4,6 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.when;
 
+import com.epam.digital.data.platform.dataaccessor.VariableAccessor;
+import com.epam.digital.data.platform.dataaccessor.VariableAccessorFactory;
+import com.epam.digital.data.platform.dataaccessor.completer.CompleterVariablesAccessor;
+import com.epam.digital.data.platform.dataaccessor.completer.CompleterVariablesReadAccessor;
 import com.epam.digital.data.platform.el.juel.ceph.CephKeyProvider;
 import com.epam.digital.data.platform.el.juel.dto.UserDto;
 import com.epam.digital.data.platform.integration.ceph.dto.FormDataDto;
@@ -39,6 +43,14 @@ public class CompleterJuelFunctionTest {
   private JwtClaimsDto jwtClaimsDto;
   @Mock
   private FormDataDto formDataDto;
+  @Mock
+  private VariableAccessorFactory variableAccessorFactory;
+  @Mock
+  private VariableAccessor variableAccessor;
+  @Mock
+  private CompleterVariablesAccessor completerVariablesAccessor;
+  @Mock
+  private CompleterVariablesReadAccessor completerVariablesReadAccessor;
   @InjectMocks
   private CompleterJuelFunction completerJuelFunction;
 
@@ -49,12 +61,19 @@ public class CompleterJuelFunctionTest {
     when(applicationContext.getBean(TokenParser.class)).thenReturn(parser);
     when(applicationContext.getBean(CephKeyProvider.class)).thenReturn(cephKeyProvider);
     when(applicationContext.getBean(FormDataCephService.class)).thenReturn(formDataCephService);
+    when(applicationContext.getBean(VariableAccessorFactory.class)).thenReturn(
+        variableAccessorFactory);
+    when(variableAccessorFactory.from(executionEntity)).thenReturn(variableAccessor);
+    when(applicationContext.getBean(CompleterVariablesAccessor.class)).thenReturn(
+        completerVariablesAccessor);
+    when(completerVariablesAccessor.from(executionEntity)).thenReturn(
+        completerVariablesReadAccessor);
   }
 
   @Test
   public void shouldGetExistedCompleter() {
     var expect = new UserDto("testUser", null, null);
-    when(executionEntity.getVariable("completer-juel-function-result-object-test"))
+    when(variableAccessor.getVariable("completer-juel-function-result-object-test"))
         .thenReturn(expect);
 
     var result = CompleterJuelFunction.completer("test");
@@ -69,8 +88,10 @@ public class CompleterJuelFunctionTest {
     var preferredName = "userName";
     var taskDefinitionKey = "taskDefinitionKey";
     var processInstanceId = "processInstanceId";
-    when(executionEntity.getVariable(String.format("%s_completer", taskDefinitionKey)))
-        .thenReturn(preferredName);
+    when(completerVariablesReadAccessor.getTaskCompleter(taskDefinitionKey))
+        .thenReturn(Optional.of(preferredName));
+    when(completerVariablesReadAccessor.getTaskCompleterToken(taskDefinitionKey))
+        .thenReturn(Optional.empty());
     when(executionEntity.getProcessInstanceId()).thenReturn(processInstanceId);
     when(cephKeyProvider.generateKey(taskDefinitionKey, processInstanceId)).thenReturn(cephKey);
     when(formDataCephService.getFormData(cephKey)).thenReturn(Optional.of(formDataDto));
@@ -88,10 +109,10 @@ public class CompleterJuelFunctionTest {
     var accessToken = "testToken";
     var preferredName = "userName";
     var taskDefinitionKey = "taskDefinitionKey";
-    when(executionEntity.getVariable(String.format("%s_completer", taskDefinitionKey)))
-        .thenReturn(preferredName);
-    when(executionEntity.getVariable(String.format("%s_completer_access_token", taskDefinitionKey)))
-        .thenReturn(accessToken);
+    when(completerVariablesReadAccessor.getTaskCompleter(taskDefinitionKey))
+        .thenReturn(Optional.of(preferredName));
+    when(completerVariablesReadAccessor.getTaskCompleterToken(taskDefinitionKey))
+        .thenReturn(Optional.of(accessToken));
 
     when(parser.parseClaims(accessToken)).thenReturn(jwtClaimsDto);
 

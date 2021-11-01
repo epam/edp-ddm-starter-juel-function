@@ -1,5 +1,7 @@
 package com.epam.digital.data.platform.el.juel;
 
+import com.epam.digital.data.platform.dataaccessor.completer.CompleterVariablesAccessor;
+import com.epam.digital.data.platform.dataaccessor.completer.CompleterVariablesReadAccessor;
 import com.epam.digital.data.platform.el.juel.ceph.CephKeyProvider;
 import com.epam.digital.data.platform.el.juel.dto.UserDto;
 import com.epam.digital.data.platform.integration.ceph.dto.FormDataDto;
@@ -19,8 +21,6 @@ public class CompleterJuelFunction extends AbstractApplicationContextAwareJuelFu
 
   private static final String JUEL_FUNCTION_NAME = "completer";
   private static final String COMPLETER_OBJ_NAME_FORMAT = "completer-juel-function-result-object-%s";
-  private static final String COMPLETER_VAR_TOKEN_FORMAT = "%s_completer_access_token";
-  private static final String COMPLETER_VAR_NAME_FORMAT = "%s_completer";
 
   public CompleterJuelFunction() {
     super(JUEL_FUNCTION_NAME, String.class);
@@ -36,36 +36,41 @@ public class CompleterJuelFunction extends AbstractApplicationContextAwareJuelFu
    * @return completer {@link UserDto} representation
    */
   public static UserDto completer(String taskDefinitionKey) {
-    final var execution = (ExecutionEntity) getExecution();
+    final var variableAccessor = getVariableAccessor();
+
     var completerResultObjectName = String.format(COMPLETER_OBJ_NAME_FORMAT, taskDefinitionKey);
+    UserDto storedObject = variableAccessor.getVariable(completerResultObjectName);
 
-    var storedObject = (UserDto) execution.getVariable(completerResultObjectName);
-
-    if (storedObject != null) {
+    if (Objects.nonNull(storedObject)) {
       return storedObject;
     }
 
-    var userDto = createUserDto(taskDefinitionKey, execution);
-    execution.removeVariable(completerResultObjectName);
-    execution.setVariableLocalTransient(completerResultObjectName, userDto);
+    final var execution = (ExecutionEntity) getExecution();
+    var userDto = createUserDto(taskDefinitionKey, execution.getProcessInstanceId());
+    variableAccessor.removeVariable(completerResultObjectName);
+    variableAccessor.setVariableTransient(completerResultObjectName, userDto);
     return userDto;
   }
 
-  private static UserDto createUserDto(String taskDefinitionKey, ExecutionEntity execution){
+  private static UserDto createUserDto(String taskDefinitionKey, String processInstanceId) {
+    final var completerVariablesReadAccessor = completerVariablesReadAccessor();
+    var varCompleterName = completerVariablesReadAccessor.getTaskCompleter(taskDefinitionKey)
+        .orElse(null);
+    var varCompleterAccessToken = completerVariablesReadAccessor.getTaskCompleterToken(
+        taskDefinitionKey);
+
     UserDto userDto;
-    var varCompleterName = (String) execution.getVariable(String.format(COMPLETER_VAR_NAME_FORMAT, taskDefinitionKey));
-      var varCompleterAccessToken = (String) execution.getVariable(String.format(COMPLETER_VAR_TOKEN_FORMAT, taskDefinitionKey));
-      if (Objects.nonNull(varCompleterAccessToken)) {
-        var claims = parseClaims(varCompleterAccessToken);
-        userDto = new UserDto(varCompleterName, varCompleterAccessToken, claims);
-      } else {
-        var completerAccessToken = getAccessTokenFromCeph(taskDefinitionKey,
-            execution.getProcessInstanceId());
-        var claims = completerAccessToken
-            .map(AbstractApplicationContextAwareJuelFunction::parseClaims);
-        userDto = new UserDto(varCompleterName, completerAccessToken.orElse(null),
-            claims.orElse(null));
-      }
+    if (varCompleterAccessToken.isPresent()) {
+      var token = varCompleterAccessToken.get();
+      var claims = parseClaims(token);
+      userDto = new UserDto(varCompleterName, token, claims);
+    } else {
+      var completerAccessToken = getAccessTokenFromCeph(taskDefinitionKey, processInstanceId);
+      var claims = completerAccessToken
+          .map(AbstractApplicationContextAwareJuelFunction::parseClaims);
+      userDto = new UserDto(varCompleterName, completerAccessToken.orElse(null),
+          claims.orElse(null));
+    }
     return userDto;
   }
 
@@ -76,5 +81,11 @@ public class CompleterJuelFunction extends AbstractApplicationContextAwareJuelFu
     var cephService = getBean(FormDataCephService.class);
     var formData = cephService.getFormData(cephKey);
     return formData.map(FormDataDto::getAccessToken);
+  }
+
+  private static CompleterVariablesReadAccessor completerVariablesReadAccessor() {
+    final var execution = (ExecutionEntity) getExecution();
+    final var completerVariablesAccessor = getBean(CompleterVariablesAccessor.class);
+    return completerVariablesAccessor.from(execution);
   }
 }

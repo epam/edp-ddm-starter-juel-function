@@ -21,7 +21,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 public abstract class BaseIT {
 
   protected static final String TOKEN_USER_NAME = "testuser";
-  protected static final String TOKEN_FULL_NAME = "test user user";
 
   @Autowired
   private RuntimeService runtimeService;

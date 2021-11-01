@@ -1,5 +1,8 @@
 package com.epam.digital.data.platform.el.juel;
 
+import com.epam.digital.data.platform.dataaccessor.VariableAccessor;
+import com.epam.digital.data.platform.dataaccessor.VariableAccessorFactory;
+import com.epam.digital.data.platform.dataaccessor.sysvar.StartFormCephKeyVariable;
 import com.epam.digital.data.platform.el.juel.mapper.CompositeApplicationContextAwareJuelFunctionMapper;
 import com.epam.digital.data.platform.starter.security.dto.JwtClaimsDto;
 import com.epam.digital.data.platform.starter.security.jwt.TokenParser;
@@ -9,6 +12,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.core.instance.CoreExecution;
+import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -52,6 +56,12 @@ public abstract class AbstractApplicationContextAwareJuelFunction implements
   protected static <T> T getBean(@NonNull Class<T> beanType) {
     return Objects.requireNonNull(applicationContext, "Spring app context isn't initialized yet")
         .getBean(beanType);
+  }
+
+  protected static VariableAccessor getVariableAccessor() {
+    final var execution = (ExecutionEntity) getExecution();
+    final var variableAccessorFactory = getBean(VariableAccessorFactory.class);
+    return variableAccessorFactory.from(execution);
   }
 
   protected static JwtClaimsDto parseClaims(String accessToken) {

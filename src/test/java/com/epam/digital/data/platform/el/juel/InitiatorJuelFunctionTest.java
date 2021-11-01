@@ -3,13 +3,16 @@ package com.epam.digital.data.platform.el.juel;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.when;
 
+import com.epam.digital.data.platform.dataaccessor.VariableAccessor;
+import com.epam.digital.data.platform.dataaccessor.VariableAccessorFactory;
+import com.epam.digital.data.platform.dataaccessor.initiator.InitiatorVariablesAccessor;
+import com.epam.digital.data.platform.dataaccessor.initiator.InitiatorVariablesReadAccessor;
 import com.epam.digital.data.platform.el.juel.dto.UserDto;
 import com.epam.digital.data.platform.starter.security.dto.JwtClaimsDto;
 import com.epam.digital.data.platform.starter.security.jwt.TokenParser;
-import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
+import java.util.Optional;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
-import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,9 +31,15 @@ public class InitiatorJuelFunctionTest {
   @Mock
   private TokenParser parser;
   @Mock
-  private ProcessDefinitionEntity processDefinition;
-  @Mock
   private JwtClaimsDto jwtClaimsDto;
+  @Mock
+  private VariableAccessorFactory variableAccessorFactory;
+  @Mock
+  private VariableAccessor variableAccessor;
+  @Mock
+  private InitiatorVariablesAccessor initiatorVariablesAccessor;
+  @Mock
+  private InitiatorVariablesReadAccessor initiatorVariablesReadAccessor;
   @InjectMocks
   private InitiatorJuelFunction initiatorJuelFunction;
 
@@ -40,15 +49,19 @@ public class InitiatorJuelFunctionTest {
     initiatorJuelFunction.setApplicationContext(applicationContext);
 
     when(applicationContext.getBean(TokenParser.class)).thenReturn(parser);
-    when(executionEntity.getProcessDefinition()).thenReturn(processDefinition);
-    when(processDefinition.getProperty(BpmnParse.PROPERTYNAME_INITIATOR_VARIABLE_NAME))
-        .thenReturn("initiator");
+    when(applicationContext.getBean(VariableAccessorFactory.class)).thenReturn(
+        variableAccessorFactory);
+    when(variableAccessorFactory.from(executionEntity)).thenReturn(variableAccessor);
+    when(applicationContext.getBean(InitiatorVariablesAccessor.class)).thenReturn(
+        initiatorVariablesAccessor);
+    when(initiatorVariablesAccessor.from(executionEntity)).thenReturn(
+        initiatorVariablesReadAccessor);
   }
 
   @Test
   public void existedInitiator() {
     var expect = new UserDto("userDto", null, null);
-    when(executionEntity.getVariable("initiator-juel-function-result-object")).thenReturn(expect);
+    when(variableAccessor.getVariable("initiator-juel-function-result-object")).thenReturn(expect);
 
     var result = InitiatorJuelFunction.initiator();
 
@@ -58,7 +71,7 @@ public class InitiatorJuelFunctionTest {
   @Test
   public void initiatorNoToken() {
     var expectName = "userDto";
-    when(executionEntity.getVariable("initiator")).thenReturn(expectName);
+    when(initiatorVariablesReadAccessor.getInitiatorName()).thenReturn(Optional.of(expectName));
 
     var result = InitiatorJuelFunction.initiator();
 
@@ -70,8 +83,8 @@ public class InitiatorJuelFunctionTest {
     var expectName = "userDto";
     var token = "token";
     var fullName = "fullName";
-    when(executionEntity.getVariable("initiator")).thenReturn(expectName);
-    when(executionEntity.getVariable("initiator_access_token")).thenReturn(token);
+    when(initiatorVariablesReadAccessor.getInitiatorName()).thenReturn(Optional.of(expectName));
+    when(initiatorVariablesReadAccessor.getInitiatorAccessToken()).thenReturn(Optional.of(token));
     when(parser.parseClaims(token)).thenReturn(jwtClaimsDto);
     when(jwtClaimsDto.getFullName()).thenReturn(fullName);
 

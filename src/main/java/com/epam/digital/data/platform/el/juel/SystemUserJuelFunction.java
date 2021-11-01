@@ -29,9 +29,9 @@ public class SystemUserJuelFunction extends AbstractApplicationContextAwareJuelF
    * @return system user {@link UserDto} representation
    */
   public static UserDto system_user() {
-    var execution = getExecution();
+    final var variableAccessor = getVariableAccessor();
 
-    var storedObject = (UserDto) execution.getVariable(SYSTEM_USER_OBJ_VAR_NAME);
+    UserDto storedObject = variableAccessor.getVariable(SYSTEM_USER_OBJ_VAR_NAME);
     if (storedObject != null) {
       return storedObject;
     }
@@ -42,8 +42,8 @@ public class SystemUserJuelFunction extends AbstractApplicationContextAwareJuelF
 
     var systemUser = new UserDto(claims.getPreferredUsername(), accessToken, claims);
 
-    execution.removeVariable(SYSTEM_USER_OBJ_VAR_NAME);
-    execution.setVariableLocalTransient(SYSTEM_USER_OBJ_VAR_NAME, systemUser);
+    variableAccessor.removeVariable(SYSTEM_USER_OBJ_VAR_NAME);
+    variableAccessor.setVariableTransient(SYSTEM_USER_OBJ_VAR_NAME, systemUser);
     return systemUser;
   }
 }
