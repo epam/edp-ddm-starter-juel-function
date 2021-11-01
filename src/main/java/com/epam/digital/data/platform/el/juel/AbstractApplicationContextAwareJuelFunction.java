@@ -2,20 +2,18 @@ package com.epam.digital.data.platform.el.juel;
 
 import com.epam.digital.data.platform.dataaccessor.VariableAccessor;
 import com.epam.digital.data.platform.dataaccessor.VariableAccessorFactory;
-import com.epam.digital.data.platform.dataaccessor.sysvar.StartFormCephKeyVariable;
 import com.epam.digital.data.platform.el.juel.mapper.CompositeApplicationContextAwareJuelFunctionMapper;
 import com.epam.digital.data.platform.starter.security.dto.JwtClaimsDto;
 import com.epam.digital.data.platform.starter.security.jwt.TokenParser;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import lombok.Getter;
-import lombok.NonNull;
 import org.camunda.bpm.engine.impl.context.Context;
-import org.camunda.bpm.engine.impl.core.instance.CoreExecution;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.lang.NonNull;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -49,8 +47,8 @@ public abstract class AbstractApplicationContextAwareJuelFunction implements
     this.juelFunctionMethod = ReflectionUtils.findMethod(getClass(), juelFunctionName, paramTypes);
   }
 
-  protected static CoreExecution getExecution() {
-    return Context.getCoreExecutionContext().getExecution();
+  protected static ExecutionEntity getExecution() {
+    return (ExecutionEntity) Context.getCoreExecutionContext().getExecution();
   }
 
   protected static <T> T getBean(@NonNull Class<T> beanType) {
@@ -59,7 +57,10 @@ public abstract class AbstractApplicationContextAwareJuelFunction implements
   }
 
   protected static VariableAccessor getVariableAccessor() {
-    final var execution = (ExecutionEntity) getExecution();
+    return getVariableAccessor(getExecution());
+  }
+
+  protected static VariableAccessor getVariableAccessor(ExecutionEntity execution) {
     final var variableAccessorFactory = getBean(VariableAccessorFactory.class);
     return variableAccessorFactory.from(execution);
   }
@@ -67,6 +68,15 @@ public abstract class AbstractApplicationContextAwareJuelFunction implements
   protected static JwtClaimsDto parseClaims(String accessToken) {
     final var tokenParser = getBean(TokenParser.class);
     return tokenParser.parseClaims(accessToken);
+  }
+
+  protected static ExecutionEntity getRootExecution() {
+    var execution = getExecution();
+
+    while (execution.getParent() != null) {
+      execution = execution.getParent();
+    }
+    return execution;
   }
 
   @Override

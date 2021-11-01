@@ -2,6 +2,7 @@ package com.epam.digital.data.platform.el.juel;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import com.epam.digital.data.platform.dataaccessor.VariableAccessor;
@@ -18,16 +19,16 @@ import com.epam.digital.data.platform.starter.security.jwt.TokenParser;
 import java.util.Optional;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CompleterJuelFunctionTest {
+@ExtendWith(MockitoExtension.class)
+class CompleterJuelFunctionTest {
 
   @Mock
   private ExecutionEntity executionEntity;
@@ -54,24 +55,22 @@ public class CompleterJuelFunctionTest {
   @InjectMocks
   private CompleterJuelFunction completerJuelFunction;
 
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     Context.setExecutionContext(executionEntity);
     completerJuelFunction.setApplicationContext(applicationContext);
-    when(applicationContext.getBean(TokenParser.class)).thenReturn(parser);
-    when(applicationContext.getBean(CephKeyProvider.class)).thenReturn(cephKeyProvider);
-    when(applicationContext.getBean(FormDataCephService.class)).thenReturn(formDataCephService);
-    when(applicationContext.getBean(VariableAccessorFactory.class)).thenReturn(
-        variableAccessorFactory);
+    lenient().when(applicationContext.getBean(TokenParser.class)).thenReturn(parser);
+    when(applicationContext.getBean(VariableAccessorFactory.class))
+        .thenReturn(variableAccessorFactory);
     when(variableAccessorFactory.from(executionEntity)).thenReturn(variableAccessor);
-    when(applicationContext.getBean(CompleterVariablesAccessor.class)).thenReturn(
-        completerVariablesAccessor);
-    when(completerVariablesAccessor.from(executionEntity)).thenReturn(
-        completerVariablesReadAccessor);
+    lenient().when(applicationContext.getBean(CompleterVariablesAccessor.class))
+        .thenReturn(completerVariablesAccessor);
+    lenient().when(completerVariablesAccessor.from(executionEntity))
+        .thenReturn(completerVariablesReadAccessor);
   }
 
   @Test
-  public void shouldGetExistedCompleter() {
+  void shouldGetExistedCompleter() {
     var expect = new UserDto("testUser", null, null);
     when(variableAccessor.getVariable("completer-juel-function-result-object-test"))
         .thenReturn(expect);
@@ -82,12 +81,14 @@ public class CompleterJuelFunctionTest {
   }
 
   @Test
-  public void shouldGetCompleterFromVarNameAndCephAccessToken() {
+  void shouldGetCompleterFromVarNameAndCephAccessToken() {
     var cephKey = "cephKey";
     var accessToken = "testToken";
     var preferredName = "userName";
     var taskDefinitionKey = "taskDefinitionKey";
     var processInstanceId = "processInstanceId";
+    when(applicationContext.getBean(CephKeyProvider.class)).thenReturn(cephKeyProvider);
+    when(applicationContext.getBean(FormDataCephService.class)).thenReturn(formDataCephService);
     when(completerVariablesReadAccessor.getTaskCompleter(taskDefinitionKey))
         .thenReturn(Optional.of(preferredName));
     when(completerVariablesReadAccessor.getTaskCompleterToken(taskDefinitionKey))
@@ -105,7 +106,7 @@ public class CompleterJuelFunctionTest {
   }
 
   @Test
-  public void shouldGetCompleterFromVarNameAndVarAccessToken() {
+  void shouldGetCompleterFromVarNameAndVarAccessToken() {
     var accessToken = "testToken";
     var preferredName = "userName";
     var taskDefinitionKey = "taskDefinitionKey";

@@ -54,6 +54,6 @@ public class InitiatorJuelFunction extends AbstractApplicationContextAwareJuelFu
 
   private static InitiatorVariablesReadAccessor initiatorVariablesReadAccessor() {
     var initiatorAccessTokenVariable = getBean(InitiatorVariablesAccessor.class);
-    return initiatorAccessTokenVariable.from((DelegateExecution) getExecution());
+    return initiatorAccessTokenVariable.from(getExecution());
   }
 }

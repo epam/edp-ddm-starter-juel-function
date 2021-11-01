@@ -35,7 +35,7 @@ public abstract class AbstractSubmissionJuelFunction extends
   }
 
   private static String getStartFormCephKey() {
-    final var execution = (ExecutionEntity) getExecution();
+    final var execution = getExecution();
     final var startFormCephKeyVariable = getBean(StartFormCephKeyVariable.class);
     return startFormCephKeyVariable.from(execution).get();
   }

@@ -10,15 +10,15 @@ import com.epam.digital.data.platform.el.juel.dto.UserDto;
 import com.epam.digital.data.platform.starter.security.dto.JwtClaimsDto;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
-@RunWith(MockitoJUnitRunner.class)
-public class SystemUserJuelFunctionTest {
+@ExtendWith(MockitoExtension.class)
+class SystemUserJuelFunctionTest {
 
   @Mock
   private ApplicationContext applicationContext;
@@ -32,7 +32,7 @@ public class SystemUserJuelFunctionTest {
   private SystemUserJuelFunction systemUserJuelFunction;
 
   @Test
-  public void shouldReturnSystemUserFromCamundaContext() {
+  void shouldReturnSystemUserFromCamundaContext() {
     systemUserJuelFunction.setApplicationContext(applicationContext);
     when(applicationContext.getBean(VariableAccessorFactory.class)).thenReturn(
         variableAccessorFactory);

@@ -3,6 +3,7 @@ package com.epam.digital.data.platform.el.juel;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.camunda.spin.Spin.JSON;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import com.epam.digital.data.platform.dataaccessor.VariableAccessor;
@@ -21,16 +22,16 @@ import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
-@RunWith(MockitoJUnitRunner.class)
-public class SubmissionJuelFunctionTest {
+@ExtendWith(MockitoExtension.class)
+class SubmissionJuelFunctionTest {
 
   @Mock
   private ExecutionEntity executionEntity;
@@ -58,24 +59,20 @@ public class SubmissionJuelFunctionTest {
   @InjectMocks
   private SubmissionJuelFunction submissionJuelFunction;
 
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     Context.setExecutionContext(executionEntity);
     submissionJuelFunction.setApplicationContext(applicationContext);
-    when(executionEntity.getProcessDefinition()).thenReturn(processDefinitionEntity);
-    when(processDefinitionEntity.getInitial()).thenReturn(activity);
-    when(activity.getId()).thenReturn("startEventId");
+    lenient().when(executionEntity.getProcessDefinition()).thenReturn(processDefinitionEntity);
+    lenient().when(processDefinitionEntity.getInitial()).thenReturn(activity);
+    lenient().when(activity.getId()).thenReturn("startEventId");
     when(applicationContext.getBean(VariableAccessorFactory.class)).thenReturn(
         variableAccessorFactory);
     when(variableAccessorFactory.from(executionEntity)).thenReturn(variableAccessor);
-    when(applicationContext.getBean(StartFormCephKeyVariable.class)).thenReturn(
-        startFormCephKeyVariable);
-    when(startFormCephKeyVariable.from(executionEntity)).thenReturn(
-        startFormCephKeyReadAccessor);
   }
 
   @Test
-  public void shouldGetExistedFormData() {
+  void shouldGetExistedFormData() {
     var expectedFormData = JSON(Map.of("userName", "testuser"));
     when(variableAccessor.getVariable("submission-juel-function-result-object-test"))
         .thenReturn(new UserFormDataDto(expectedFormData));
@@ -86,7 +83,7 @@ public class SubmissionJuelFunctionTest {
   }
 
   @Test
-  public void shouldGetUserTaskFormDataFromCeph() {
+  void shouldGetUserTaskFormDataFromCeph() {
     var cephKey = "cephKey";
     var taskDefinitionKey = "taskDefinitionKey";
     var processInstanceId = "processInstanceId";
@@ -105,11 +102,14 @@ public class SubmissionJuelFunctionTest {
   }
 
   @Test
-  public void shouldGetStartEventFormDataFromCeph() {
+  void shouldGetStartEventFormDataFromCeph() {
     var cephKey = "cephKey";
     var taskDefinitionKey = "startEventId";
     var expectedFormData = new LinkedHashMap<String, Object>();
     expectedFormData.put("userName", "testuser");
+    when(applicationContext.getBean(StartFormCephKeyVariable.class))
+        .thenReturn(startFormCephKeyVariable);
+    when(startFormCephKeyVariable.from(executionEntity)).thenReturn(startFormCephKeyReadAccessor);
     when(startFormCephKeyReadAccessor.get()).thenReturn(cephKey);
     when(applicationContext.getBean(FormDataCephService.class)).thenReturn(formDataCephService);
     when(formDataCephService.getFormData(cephKey)).thenReturn(Optional.of(formDataDto));

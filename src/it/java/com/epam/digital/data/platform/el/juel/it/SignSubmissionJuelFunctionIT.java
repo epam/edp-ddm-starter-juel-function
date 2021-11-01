@@ -5,13 +5,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class SignSubmissionJuelFunctionIT extends BaseIT {
+class SignSubmissionJuelFunctionIT extends BaseIT {
 
   @Test
   @Deployment(resources = "bpmn/sign_submission_juel_function_activity.bpmn")
-  public void testSignSubmissionFunctionWithActivityId() {
+  void testSignSubmissionFunctionWithActivityId() {
     var taskDefinitionKey = "signSubmissionTaskKey";
     var processDefinitionKey = "testSignSubmissionKey";
     var signature = "test signature";
@@ -21,7 +21,8 @@ public class SignSubmissionJuelFunctionIT extends BaseIT {
     var processInstance = runtimeService().startProcessInstanceByKey(processDefinitionKey);
 
     var cephKey = cephKeyProvider().generateKey(taskDefinitionKey, processInstance.getId());
-    formDataCephService().putFormData(cephKey, FormDataDto.builder().data(data).signature(signature).build());
+    formDataCephService().putFormData(cephKey,
+        FormDataDto.builder().data(data).signature(signature).build());
 
     String taskId = taskService().createTaskQuery().taskDefinitionKey(taskDefinitionKey)
         .singleResult().getId();
@@ -32,7 +33,7 @@ public class SignSubmissionJuelFunctionIT extends BaseIT {
 
   @Test
   @Deployment(resources = "bpmn/sign_submission_juel_function_event.bpmn")
-  public void testSignSubmissionFunctionWithEventId() {
+  void testSignSubmissionFunctionWithEventId() {
     var taskDefinitionKey = "signSubmissionTaskKey2";
     var processDefinitionKey = "testSignSubmissionKey2";
     var signature = "test signature";
@@ -42,7 +43,8 @@ public class SignSubmissionJuelFunctionIT extends BaseIT {
 
     var processInstance = runtimeService().startProcessInstanceByKey(processDefinitionKey, vars);
 
-    formDataCephService().putFormData("testSignatureDocumentId", FormDataDto.builder().data(data).signature(signature).build());
+    formDataCephService().putFormData("testSignatureDocumentId",
+        FormDataDto.builder().data(data).signature(signature).build());
 
     String taskId = taskService().createTaskQuery().taskDefinitionKey(taskDefinitionKey)
         .singleResult().getId();

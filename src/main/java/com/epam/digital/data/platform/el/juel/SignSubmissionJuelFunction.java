@@ -31,7 +31,7 @@ public class SignSubmissionJuelFunction extends AbstractSubmissionJuelFunction {
    * @return form data and signature {@link SignUserFormDataDto} representation
    */
   public static SignUserFormDataDto sign_submission(String bpmnElementId) {
-    final var execution = (ExecutionEntity) getExecution();
+    final var execution = getExecution();
     final var variableAccessor = getVariableAccessor();
 
     var signSubmissionResultObjectName = String

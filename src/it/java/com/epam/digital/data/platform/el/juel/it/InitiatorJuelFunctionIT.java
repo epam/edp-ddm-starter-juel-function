@@ -4,13 +4,13 @@ import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.assertT
 
 import java.util.Map;
 import org.camunda.bpm.engine.test.Deployment;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class InitiatorJuelFunctionIT extends BaseIT {
+class InitiatorJuelFunctionIT extends BaseIT {
 
   @Test
   @Deployment(resources = {"bpmn/initiator_juel_function.bpmn"})
-  public void initiator() {
+  void initiator() {
 
     var processInstance = runtimeService().startProcessInstanceByKey("initiator_juel_function", "",
         Map.of("initiator", TOKEN_USER_NAME, "initiator_access_token", accessToken()));

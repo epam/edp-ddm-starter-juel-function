@@ -4,13 +4,13 @@ import com.epam.digital.data.platform.integration.ceph.dto.FormDataDto;
 import java.util.Map;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class CompleterJuelFunctionIT extends BaseIT{
+class CompleterJuelFunctionIT extends BaseIT {
 
   @Test
   @Deployment(resources = "bpmn/completer_juel_function.bpmn")
-  public void testCompleterFunction() {
+  void testCompleterFunction() {
     var taskDefinitionKey = "waitConditionTaskKey";
     var processDefinitionKey = "testCompleterKey";
     Map<String, Object> vars = Map.of(String.format("%s_completer", taskDefinitionKey), "testuser");
@@ -19,9 +19,11 @@ public class CompleterJuelFunctionIT extends BaseIT{
 
     var cephKey = cephKeyProvider()
         .generateKey(taskDefinitionKey, processInstance.getId());
-    formDataCephService().putFormData(cephKey, FormDataDto.builder().accessToken(accessToken()).build());
+    formDataCephService().putFormData(cephKey,
+        FormDataDto.builder().accessToken(accessToken()).build());
 
-    String taskId = taskService().createTaskQuery().taskDefinitionKey(taskDefinitionKey).singleResult().getId();
+    String taskId = taskService().createTaskQuery().taskDefinitionKey(taskDefinitionKey)
+        .singleResult().getId();
     taskService().complete(taskId);
 
     BpmnAwareTests.assertThat(processInstance).isEnded();

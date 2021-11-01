@@ -7,16 +7,16 @@ import java.io.IOException;
 import java.util.Objects;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ActiveProfiles("test")
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = TestCamundaApp.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 public abstract class BaseIT {
 
@@ -33,10 +33,9 @@ public abstract class BaseIT {
 
   private String accessToken;
 
-  @Before
-  public void setAccessToken() throws IOException {
-    accessToken = new String(ByteStreams.toByteArray(Objects
-        .requireNonNull(BaseIT.class.getResourceAsStream("/testuserAccessToken.txt"))));
+  @BeforeEach
+  void setAccessToken() throws IOException {
+    accessToken = getContentFromFile("/testuserAccessToken.txt");
   }
 
   protected RuntimeService runtimeService() {
@@ -59,8 +58,8 @@ public abstract class BaseIT {
     return cephKeyProvider;
   }
 
-  protected static String getContentFromJson(String jsonPath) throws IOException {
+  protected String getContentFromFile(String filePath) throws IOException {
     return new String(ByteStreams.toByteArray(Objects
-        .requireNonNull(BaseIT.class.getResourceAsStream(jsonPath))));
+        .requireNonNull(BaseIT.class.getResourceAsStream(filePath))));
   }
 }

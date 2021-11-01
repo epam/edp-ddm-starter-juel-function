@@ -2,7 +2,6 @@ package com.epam.digital.data.platform.el.juel;
 
 import com.epam.digital.data.platform.el.juel.dto.UserFormDataDto;
 import com.epam.digital.data.platform.integration.ceph.dto.FormDataDto;
-import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.spin.Spin;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +30,7 @@ public class SubmissionJuelFunction extends AbstractSubmissionJuelFunction {
    * @return form data {@link UserFormDataDto} representation
    */
   public static UserFormDataDto submission(String bpmnElementId) {
-    final var execution = (ExecutionEntity) getExecution();
+    final var execution = getExecution();
     final var variableAccessor = getVariableAccessor();
 
     var submissionResultObjectName = String

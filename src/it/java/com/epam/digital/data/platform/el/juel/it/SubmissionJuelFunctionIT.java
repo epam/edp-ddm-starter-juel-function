@@ -5,13 +5,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class SubmissionJuelFunctionIT extends BaseIT {
+class SubmissionJuelFunctionIT extends BaseIT {
 
   @Test
   @Deployment(resources = "bpmn/submission_juel_function_activity.bpmn")
-  public void testSubmissionFunctionWithActivityId() {
+  void testSubmissionFunctionWithActivityId() {
     var taskDefinitionKey = "submissionTaskKey";
     var processDefinitionKey = "testSubmissionKey";
     var formData = new LinkedHashMap<String, Object>();
@@ -31,7 +31,7 @@ public class SubmissionJuelFunctionIT extends BaseIT {
 
   @Test
   @Deployment(resources = "bpmn/submission_juel_function_event.bpmn")
-  public void testSubmissionFunctionWithEventId() {
+  void testSubmissionFunctionWithEventId() {
     var taskDefinitionKey = "submissionTaskKey2";
     var processDefinitionKey = "testSubmissionKey2";
     var formData = new LinkedHashMap<String, Object>();

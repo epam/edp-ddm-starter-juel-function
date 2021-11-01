@@ -9,18 +9,18 @@ import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.assertT
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import java.io.IOException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-public class SystemUserJuelFunctionIT extends BaseIT {
+class SystemUserJuelFunctionIT extends BaseIT {
 
   @Autowired
   @Qualifier("keycloakMockServer")
   protected WireMockServer keycloakMockServer;
 
   @Test
-  public void testSystemUserJuelFunction() throws IOException {
+  void testSystemUserJuelFunction() throws IOException {
     mockConnectToKeycloak();
 
     var processInstance = runtimeService().startProcessInstanceByKey("test_system_user", "");
@@ -33,6 +33,6 @@ public class SystemUserJuelFunctionIT extends BaseIT {
             .withRequestBody(equalTo("grant_type=client_credentials"))
             .willReturn(aResponse().withStatus(200)
                 .withHeader("Content-type", "application/json")
-                .withBody(getContentFromJson("/json/keycloakConnectResponse.json")))));
+                .withBody(getContentFromFile("/json/keycloakConnectResponse.json")))));
   }
 }

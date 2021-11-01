@@ -3,6 +3,7 @@ package com.epam.digital.data.platform.el.juel;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.camunda.spin.Spin.JSON;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import com.epam.digital.data.platform.dataaccessor.VariableAccessor;
@@ -21,16 +22,16 @@ import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
-@RunWith(MockitoJUnitRunner.class)
-public class SignSubmissionJuelFunctionTest {
+@ExtendWith(MockitoExtension.class)
+class SignSubmissionJuelFunctionTest {
 
   @Mock
   private ExecutionEntity executionEntity;
@@ -57,24 +58,20 @@ public class SignSubmissionJuelFunctionTest {
   @InjectMocks
   private SignSubmissionJuelFunction signSubmissionJuelFunction;
 
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     Context.setExecutionContext(executionEntity);
     signSubmissionJuelFunction.setApplicationContext(applicationContext);
-    when(executionEntity.getProcessDefinition()).thenReturn(processDefinitionEntity);
-    when(processDefinitionEntity.getInitial()).thenReturn(activity);
-    when(activity.getId()).thenReturn("startEventId");
+    lenient().when(executionEntity.getProcessDefinition()).thenReturn(processDefinitionEntity);
+    lenient().when(processDefinitionEntity.getInitial()).thenReturn(activity);
+    lenient().when(activity.getId()).thenReturn("startEventId");
     when(applicationContext.getBean(VariableAccessorFactory.class)).thenReturn(
         variableAccessorFactory);
     when(variableAccessorFactory.from(executionEntity)).thenReturn(variableAccessor);
-    when(applicationContext.getBean(StartFormCephKeyVariable.class)).thenReturn(
-        startFormCephKeyVariable);
-    when(startFormCephKeyVariable.from(executionEntity)).thenReturn(
-        startFormCephKeyReadAccessor);
   }
 
   @Test
-  public void shouldGetExistedFormData() {
+  void shouldGetExistedFormData() {
     var data = JSON(Map.of("userName", "testuser"));
     var signature = "test signature";
     var signatureDocumentId = "testId";
@@ -89,7 +86,7 @@ public class SignSubmissionJuelFunctionTest {
   }
 
   @Test
-  public void shouldGetUserTaskFormDataFromCeph() {
+  void shouldGetUserTaskFormDataFromCeph() {
     var cephKey = "cephKey";
     var taskDefinitionKey = "taskDefinitionKey";
     var processInstanceId = "processInstanceId";
@@ -113,12 +110,16 @@ public class SignSubmissionJuelFunctionTest {
   }
 
   @Test
-  public void shouldGetStartEventFormDataFromCeph() {
+  void shouldGetStartEventFormDataFromCeph() {
     var cephKey = "cephKey";
     var taskDefinitionKey = "startEventId";
     var signature = "test signature";
     var data = new LinkedHashMap<String, Object>();
     data.put("userName", "testuser");
+    when(applicationContext.getBean(StartFormCephKeyVariable.class))
+        .thenReturn(startFormCephKeyVariable);
+    when(startFormCephKeyVariable.from(executionEntity))
+        .thenReturn(startFormCephKeyReadAccessor);
     when(startFormCephKeyReadAccessor.get()).thenReturn(cephKey);
     when(applicationContext.getBean(FormDataCephService.class)).thenReturn(formDataCephService);
     when(formDataCephService.getFormData(cephKey)).thenReturn(Optional.of(formDataDto));
@@ -134,7 +135,7 @@ public class SignSubmissionJuelFunctionTest {
   }
 
   @Test
-  public void shouldReturnNullCephKeyIfDocumentNotExists() {
+  void shouldReturnNullCephKeyIfDocumentNotExists() {
     var cephKey = "cephKey";
     var taskDefinitionKey = "task";
     var processInstanceId = "processInstanceId";

@@ -12,7 +12,7 @@ import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.springframework.stereotype.Component;
 
 /**
- * Class with JUEL function that resolves an completer info object
+ * Class with JUEL function that resolves a completer info object
  *
  * @see CompleterJuelFunction#completer(String) The function itself
  */
@@ -45,7 +45,7 @@ public class CompleterJuelFunction extends AbstractApplicationContextAwareJuelFu
       return storedObject;
     }
 
-    final var execution = (ExecutionEntity) getExecution();
+    final var execution = getExecution();
     var userDto = createUserDto(taskDefinitionKey, execution.getProcessInstanceId());
     variableAccessor.removeVariable(completerResultObjectName);
     variableAccessor.setVariableTransient(completerResultObjectName, userDto);
@@ -84,7 +84,7 @@ public class CompleterJuelFunction extends AbstractApplicationContextAwareJuelFu
   }
 
   private static CompleterVariablesReadAccessor completerVariablesReadAccessor() {
-    final var execution = (ExecutionEntity) getExecution();
+    final var execution = getExecution();
     final var completerVariablesAccessor = getBean(CompleterVariablesAccessor.class);
     return completerVariablesAccessor.from(execution);
   }
