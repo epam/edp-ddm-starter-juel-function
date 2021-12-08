@@ -17,8 +17,8 @@
 package com.epam.digital.data.platform.el.juel;
 
 import com.epam.digital.data.platform.el.juel.dto.SignUserFormDataDto;
-import com.epam.digital.data.platform.integration.ceph.dto.FormDataDto;
-import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
+import com.epam.digital.data.platform.storage.form.dto.FormDataDto;
+import com.epam.digital.data.platform.storage.form.dto.FormDataWrapperDto;
 import org.camunda.spin.Spin;
 import org.springframework.stereotype.Component;
 
@@ -38,10 +38,10 @@ public class SignSubmissionJuelFunction extends AbstractSubmissionJuelFunction {
   }
 
   /**
-   * Static JUEL function that retrieves form data and signature from ceph
+   * Static JUEL function that retrieves form data and signature from storage
    * <p>
    * Checks if there already is an object with form data and signature in Camunda execution context
-   * and returns it if it exists or else reads data from ceph
+   * and returns it if it exists or else reads data from storage
    *
    * @param bpmnElementId event or activity identifier
    * @return form data and signature {@link SignUserFormDataDto} representation
@@ -57,13 +57,14 @@ public class SignSubmissionJuelFunction extends AbstractSubmissionJuelFunction {
       return storedObject;
     }
 
-    var cephKey = getCephKey(bpmnElementId, execution);
-    var formData = getFormDataFromCeph(cephKey);
+    var formData = getFormDataFromStorageWithKey(bpmnElementId, execution);
 
-    var data = formData.map(FormDataDto::getData).map(Spin::JSON).orElse(null);
-    var signature = formData.map(FormDataDto::getSignature).orElse(null);
+    var data = formData.map(FormDataWrapperDto::getFormData)
+        .map(FormDataDto::getData).map(Spin::JSON).orElse(null);
+    var signature = formData.map(FormDataWrapperDto::getFormData)
+        .map(FormDataDto::getSignature).orElse(null);
     var signUserFormDataDto = new SignUserFormDataDto(data, signature,
-        formData.isEmpty() ? null : cephKey);
+        formData.isEmpty() ? null : formData.get().getStorageKey());
 
     variableAccessor.removeVariable(signSubmissionResultObjectName);
     variableAccessor.setVariableTransient(signSubmissionResultObjectName, signUserFormDataDto);

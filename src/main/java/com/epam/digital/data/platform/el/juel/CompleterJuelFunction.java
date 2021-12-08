@@ -18,13 +18,11 @@ package com.epam.digital.data.platform.el.juel;
 
 import com.epam.digital.data.platform.dataaccessor.completer.CompleterVariablesAccessor;
 import com.epam.digital.data.platform.dataaccessor.completer.CompleterVariablesReadAccessor;
-import com.epam.digital.data.platform.el.juel.ceph.CephKeyProvider;
 import com.epam.digital.data.platform.el.juel.dto.UserDto;
-import com.epam.digital.data.platform.integration.ceph.dto.FormDataDto;
-import com.epam.digital.data.platform.integration.ceph.service.FormDataCephService;
+import com.epam.digital.data.platform.storage.form.dto.FormDataDto;
+import com.epam.digital.data.platform.storage.form.service.FormDataStorageService;
 import java.util.Objects;
 import java.util.Optional;
-import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.springframework.stereotype.Component;
 
 /**
@@ -46,7 +44,7 @@ public class CompleterJuelFunction extends AbstractApplicationContextAwareJuelFu
    * Static JUEL function that resolves an {@link UserDto} object of the user-task completer
    * <p>
    * Checks if there already is an object with completer info in Camunda execution context and
-   * returns it if it exists or else reads token from ceph, parses token claims and creates an
+   * returns it if it exists or else reads token from storage, parses token claims and creates an
    * {@link UserDto} object with all found data
    *
    * @return completer {@link UserDto} representation
@@ -92,10 +90,8 @@ public class CompleterJuelFunction extends AbstractApplicationContextAwareJuelFu
 
   private static Optional<String> getAccessTokenFromCeph(String taskDefinitionKey,
       String processInstanceId) {
-    var cephKeyProvider = getBean(CephKeyProvider.class);
-    var cephKey = cephKeyProvider.generateKey(taskDefinitionKey, processInstanceId);
-    var cephService = getBean(FormDataCephService.class);
-    var formData = cephService.getFormData(cephKey);
+    var storageService = getBean(FormDataStorageService.class);
+    var formData = storageService.getFormData(taskDefinitionKey, processInstanceId);
     return formData.map(FormDataDto::getAccessToken);
   }
 

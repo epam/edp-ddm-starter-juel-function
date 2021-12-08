@@ -12,7 +12,7 @@
   </parent>
 
   <artifactId>ddm-starter-juel-function</artifactId>
-  <version>1.5.2-SNAPSHOT</version>
+  <version>1.5.3-SNAPSHOT</version>
 
   <properties>
     <sonar.coverage.exclusions>**/digital/data/platform/el/juel/dto/**/*</sonar.coverage.exclusions>
@@ -24,7 +24,7 @@
     <spring.boot.version>2.3.9.RELEASE</spring.boot.version>
 
     <ddm-starter-security.version>1.5.0-SNAPSHOT</ddm-starter-security.version>
-    <ddm-ceph-client.version>1.4.0</ddm-ceph-client.version>
+    <ddm-form-data-storage.version>1.5.1-SNAPSHOT</ddm-form-data-storage.version>
     <ddm-bpm-data-accessor.version>1.5.1-SNAPSHOT</ddm-bpm-data-accessor.version>
 
     <keycloak-admin-client.version>13.0.1</keycloak-admin-client.version>
@@ -58,8 +58,8 @@
 
     <dependency>
       <groupId>com.epam.digital.data.platform</groupId>
-      <artifactId>ddm-ceph-client</artifactId>
-      <version>${ddm-ceph-client.version}</version>
+      <artifactId>ddm-form-data-storage</artifactId>
+      <version>${ddm-form-data-storage.version}</version>
     </dependency>
     <dependency>
       <groupId>com.epam.digital.data.platform</groupId>

@@ -17,9 +17,9 @@
 package com.epam.digital.data.platform.el.juel;
 
 import com.epam.digital.data.platform.dataaccessor.sysvar.StartFormCephKeyVariable;
-import com.epam.digital.data.platform.el.juel.ceph.CephKeyProvider;
-import com.epam.digital.data.platform.integration.ceph.dto.FormDataDto;
-import com.epam.digital.data.platform.integration.ceph.service.FormDataCephService;
+import com.epam.digital.data.platform.storage.form.dto.FormDataDto;
+import com.epam.digital.data.platform.storage.form.dto.FormDataWrapperDto;
+import com.epam.digital.data.platform.storage.form.service.FormDataStorageService;
 import java.util.Optional;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 
@@ -33,24 +33,29 @@ public abstract class AbstractSubmissionJuelFunction extends
     super(juelFunctionName, paramTypes);
   }
 
-  protected static String getCephKey(String bpmnElementId, ExecutionEntity execution) {
+  protected static Optional<FormDataDto> getFormDataFromStorage(String bpmnElementId,
+      ExecutionEntity execution) {
     var startEventId = execution.getProcessDefinition().getInitial().getId();
-    String cephKey;
+    var storageService = getBean(FormDataStorageService.class);
     if (bpmnElementId.equals(startEventId)) {
-      cephKey = getStartFormCephKey();
+      return storageService.getFormData(getStartFormStorageKey());
     } else {
-      var cephKeyProvider = getBean(CephKeyProvider.class);
-      cephKey = cephKeyProvider.generateKey(bpmnElementId, execution.getProcessInstanceId());
+      return storageService.getFormData(bpmnElementId, execution.getProcessInstanceId());
     }
-    return cephKey;
   }
 
-  protected static Optional<FormDataDto> getFormDataFromCeph(String cephKey) {
-    var cephService = getBean(FormDataCephService.class);
-    return cephService.getFormData(cephKey);
+  protected static Optional<FormDataWrapperDto> getFormDataFromStorageWithKey(String bpmnElementId,
+      ExecutionEntity execution) {
+    var startEventId = execution.getProcessDefinition().getInitial().getId();
+    var storageService = getBean(FormDataStorageService.class);
+    if (bpmnElementId.equals(startEventId)) {
+      return storageService.getFormDataWithKey(getStartFormStorageKey());
+    } else {
+      return storageService.getFormDataWithKey(bpmnElementId, execution.getProcessInstanceId());
+    }
   }
 
-  private static String getStartFormCephKey() {
+  private static String getStartFormStorageKey() {
     final var execution = getExecution();
     final var startFormCephKeyVariable = getBean(StartFormCephKeyVariable.class);
     return startFormCephKeyVariable.from(execution).get();

@@ -25,13 +25,11 @@ import com.epam.digital.data.platform.dataaccessor.VariableAccessor;
 import com.epam.digital.data.platform.dataaccessor.VariableAccessorFactory;
 import com.epam.digital.data.platform.dataaccessor.completer.CompleterVariablesAccessor;
 import com.epam.digital.data.platform.dataaccessor.completer.CompleterVariablesReadAccessor;
-import com.epam.digital.data.platform.el.juel.ceph.CephKeyProvider;
 import com.epam.digital.data.platform.el.juel.dto.UserDto;
-import com.epam.digital.data.platform.integration.ceph.dto.FormDataDto;
-import com.epam.digital.data.platform.integration.ceph.service.FormDataCephService;
-import com.epam.digital.data.platform.integration.ceph.service.impl.FormDataCephServiceImpl;
 import com.epam.digital.data.platform.starter.security.dto.JwtClaimsDto;
 import com.epam.digital.data.platform.starter.security.jwt.TokenParser;
+import com.epam.digital.data.platform.storage.form.dto.FormDataDto;
+import com.epam.digital.data.platform.storage.form.service.FormDataStorageService;
 import java.util.Optional;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
@@ -53,9 +51,7 @@ class CompleterJuelFunctionTest {
   @Mock
   private TokenParser parser;
   @Mock
-  private CephKeyProvider cephKeyProvider;
-  @Mock
-  private FormDataCephServiceImpl formDataCephService;
+  private FormDataStorageService formDataStorageService;
   @Mock
   private JwtClaimsDto jwtClaimsDto;
   @Mock
@@ -98,20 +94,18 @@ class CompleterJuelFunctionTest {
 
   @Test
   void shouldGetCompleterFromVarNameAndCephAccessToken() {
-    var cephKey = "cephKey";
     var accessToken = "testToken";
     var preferredName = "userName";
     var taskDefinitionKey = "taskDefinitionKey";
     var processInstanceId = "processInstanceId";
-    when(applicationContext.getBean(CephKeyProvider.class)).thenReturn(cephKeyProvider);
-    when(applicationContext.getBean(FormDataCephService.class)).thenReturn(formDataCephService);
+    when(applicationContext.getBean(FormDataStorageService.class)).thenReturn(
+        formDataStorageService);
     when(completerVariablesReadAccessor.getTaskCompleter(taskDefinitionKey))
         .thenReturn(Optional.of(preferredName));
     when(completerVariablesReadAccessor.getTaskCompleterToken(taskDefinitionKey))
         .thenReturn(Optional.empty());
     when(executionEntity.getProcessInstanceId()).thenReturn(processInstanceId);
-    when(cephKeyProvider.generateKey(taskDefinitionKey, processInstanceId)).thenReturn(cephKey);
-    when(formDataCephService.getFormData(cephKey)).thenReturn(Optional.of(formDataDto));
+    when(formDataStorageService.getFormData(taskDefinitionKey, processInstanceId)).thenReturn(Optional.of(formDataDto));
     when(formDataDto.getAccessToken()).thenReturn(accessToken);
     when(parser.parseClaims(accessToken)).thenReturn(jwtClaimsDto);
 

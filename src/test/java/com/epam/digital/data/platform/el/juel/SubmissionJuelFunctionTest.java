@@ -26,11 +26,9 @@ import com.epam.digital.data.platform.dataaccessor.VariableAccessor;
 import com.epam.digital.data.platform.dataaccessor.VariableAccessorFactory;
 import com.epam.digital.data.platform.dataaccessor.named.NamedVariableReadAccessor;
 import com.epam.digital.data.platform.dataaccessor.sysvar.StartFormCephKeyVariable;
-import com.epam.digital.data.platform.el.juel.ceph.CephKeyProvider;
 import com.epam.digital.data.platform.el.juel.dto.UserFormDataDto;
-import com.epam.digital.data.platform.integration.ceph.dto.FormDataDto;
-import com.epam.digital.data.platform.integration.ceph.service.FormDataCephService;
-import com.epam.digital.data.platform.integration.ceph.service.impl.FormDataCephServiceImpl;
+import com.epam.digital.data.platform.storage.form.dto.FormDataDto;
+import com.epam.digital.data.platform.storage.form.service.FormDataStorageService;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -54,9 +52,7 @@ class SubmissionJuelFunctionTest {
   @Mock
   private ApplicationContext applicationContext;
   @Mock
-  private CephKeyProvider cephKeyProvider;
-  @Mock
-  private FormDataCephServiceImpl formDataCephService;
+  private FormDataStorageService formDataStorageService;
   @Mock
   private FormDataDto formDataDto;
   @Mock
@@ -100,16 +96,13 @@ class SubmissionJuelFunctionTest {
 
   @Test
   void shouldGetUserTaskFormDataFromCeph() {
-    var cephKey = "cephKey";
     var taskDefinitionKey = "taskDefinitionKey";
     var processInstanceId = "processInstanceId";
     var expectedFormData = new LinkedHashMap<String, Object>();
     expectedFormData.put("userName", "testuser");
     when(executionEntity.getProcessInstanceId()).thenReturn(processInstanceId);
-    when(applicationContext.getBean(CephKeyProvider.class)).thenReturn(cephKeyProvider);
-    when(cephKeyProvider.generateKey(taskDefinitionKey, processInstanceId)).thenReturn(cephKey);
-    when(applicationContext.getBean(FormDataCephService.class)).thenReturn(formDataCephService);
-    when(formDataCephService.getFormData(cephKey)).thenReturn(Optional.of(formDataDto));
+    when(applicationContext.getBean(FormDataStorageService.class)).thenReturn(formDataStorageService);
+    when(formDataStorageService.getFormData(taskDefinitionKey, processInstanceId)).thenReturn(Optional.of(formDataDto));
     when(formDataDto.getData()).thenReturn(expectedFormData);
 
     var actualFormData = SubmissionJuelFunction.submission(taskDefinitionKey);
@@ -127,8 +120,8 @@ class SubmissionJuelFunctionTest {
         .thenReturn(startFormCephKeyVariable);
     when(startFormCephKeyVariable.from(executionEntity)).thenReturn(startFormCephKeyReadAccessor);
     when(startFormCephKeyReadAccessor.get()).thenReturn(cephKey);
-    when(applicationContext.getBean(FormDataCephService.class)).thenReturn(formDataCephService);
-    when(formDataCephService.getFormData(cephKey)).thenReturn(Optional.of(formDataDto));
+    when(applicationContext.getBean(FormDataStorageService.class)).thenReturn(formDataStorageService);
+    when(formDataStorageService.getFormData(cephKey)).thenReturn(Optional.of(formDataDto));
     when(formDataDto.getData()).thenReturn(expectedFormData);
 
     var actualFormData = SubmissionJuelFunction.submission(taskDefinitionKey);

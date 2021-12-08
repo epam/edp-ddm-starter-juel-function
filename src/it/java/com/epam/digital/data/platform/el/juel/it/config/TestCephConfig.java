@@ -16,7 +16,14 @@
 
 package com.epam.digital.data.platform.el.juel.it.config;
 
-import com.epam.digital.data.platform.integration.ceph.service.FormDataCephService;
+import com.epam.digital.data.platform.integration.ceph.service.CephService;
+import com.epam.digital.data.platform.storage.form.repository.CephFormDataRepository;
+import com.epam.digital.data.platform.storage.form.repository.FormDataRepository;
+import com.epam.digital.data.platform.storage.form.service.FormDataKeyProviderImpl;
+import com.epam.digital.data.platform.storage.form.service.FormDataStorageService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,7 +31,15 @@ import org.springframework.context.annotation.Configuration;
 public class TestCephConfig {
 
   @Bean
-  public FormDataCephService formDataCephService() {
-    return new TestFormDataCephServiceImpl();
+  public FormDataRepository formDataRepository() {
+    return new TestCephFormDataRepository();
+  }
+
+  @Bean
+  public FormDataStorageService formDataStorageService(FormDataRepository formDataRepository) {
+    return FormDataStorageService.builder()
+        .keyProvider(new FormDataKeyProviderImpl())
+        .repository(formDataRepository)
+        .build();
   }
 }

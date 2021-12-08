@@ -16,8 +16,7 @@
 
 package com.epam.digital.data.platform.el.juel.it;
 
-import com.epam.digital.data.platform.el.juel.ceph.CephKeyProvider;
-import com.epam.digital.data.platform.el.juel.it.config.TestFormDataCephServiceImpl;
+import com.epam.digital.data.platform.storage.form.service.FormDataStorageService;
 import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.util.Objects;
@@ -43,9 +42,7 @@ public abstract class BaseIT {
   @Autowired
   private TaskService taskService;
   @Autowired
-  private TestFormDataCephServiceImpl formDataCephService;
-  @Autowired
-  private CephKeyProvider cephKeyProvider;
+  private FormDataStorageService formDataStorageService;
 
   private String accessToken;
 
@@ -66,12 +63,8 @@ public abstract class BaseIT {
     return taskService;
   }
 
-  protected TestFormDataCephServiceImpl formDataCephService() {
-    return formDataCephService;
-  }
-
-  protected CephKeyProvider cephKeyProvider() {
-    return cephKeyProvider;
+  protected FormDataStorageService formDataStorageService() {
+    return formDataStorageService;
   }
 
   protected String getContentFromFile(String filePath) throws IOException {

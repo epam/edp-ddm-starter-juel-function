@@ -16,7 +16,7 @@
 
 package com.epam.digital.data.platform.el.juel.it;
 
-import com.epam.digital.data.platform.integration.ceph.dto.FormDataDto;
+import com.epam.digital.data.platform.storage.form.dto.FormDataDto;
 import java.util.Map;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests;
@@ -33,9 +33,7 @@ class CompleterJuelFunctionIT extends BaseIT {
 
     var processInstance = runtimeService().startProcessInstanceByKey(processDefinitionKey, vars);
 
-    var cephKey = cephKeyProvider()
-        .generateKey(taskDefinitionKey, processInstance.getId());
-    formDataCephService().putFormData(cephKey,
+    formDataStorageService().putFormData(taskDefinitionKey, processInstance.getId(),
         FormDataDto.builder().accessToken(accessToken()).build());
 
     String taskId = taskService().createTaskQuery().taskDefinitionKey(taskDefinitionKey)

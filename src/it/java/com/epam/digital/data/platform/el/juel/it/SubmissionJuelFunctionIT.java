@@ -16,7 +16,7 @@
 
 package com.epam.digital.data.platform.el.juel.it;
 
-import com.epam.digital.data.platform.integration.ceph.dto.FormDataDto;
+import com.epam.digital.data.platform.storage.form.dto.FormDataDto;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.camunda.bpm.engine.test.Deployment;
@@ -35,8 +35,8 @@ class SubmissionJuelFunctionIT extends BaseIT {
 
     var processInstance = runtimeService().startProcessInstanceByKey(processDefinitionKey);
 
-    var cephKey = cephKeyProvider().generateKey(taskDefinitionKey, processInstance.getId());
-    formDataCephService().putFormData(cephKey, FormDataDto.builder().data(formData).build());
+    formDataStorageService().putFormData(taskDefinitionKey, processInstance.getId(),
+        FormDataDto.builder().data(formData).build());
 
     String taskId = taskService().createTaskQuery().taskDefinitionKey(taskDefinitionKey)
         .singleResult().getId();
@@ -56,7 +56,7 @@ class SubmissionJuelFunctionIT extends BaseIT {
 
     var processInstance = runtimeService().startProcessInstanceByKey(processDefinitionKey, vars);
 
-    formDataCephService().putFormData("testKey", FormDataDto.builder().data(formData).build());
+    formDataStorageService().putFormData("testKey", FormDataDto.builder().data(formData).build());
 
     String taskId = taskService().createTaskQuery().taskDefinitionKey(taskDefinitionKey)
         .singleResult().getId();

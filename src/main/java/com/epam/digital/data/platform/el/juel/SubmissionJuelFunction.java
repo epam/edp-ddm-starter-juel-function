@@ -17,7 +17,7 @@
 package com.epam.digital.data.platform.el.juel;
 
 import com.epam.digital.data.platform.el.juel.dto.UserFormDataDto;
-import com.epam.digital.data.platform.integration.ceph.dto.FormDataDto;
+import com.epam.digital.data.platform.storage.form.dto.FormDataDto;
 import org.camunda.spin.Spin;
 import org.springframework.stereotype.Component;
 
@@ -37,10 +37,10 @@ public class SubmissionJuelFunction extends AbstractSubmissionJuelFunction {
   }
 
   /**
-   * Static JUEL function that retrieves form data from ceph
+   * Static JUEL function that retrieves form data from storage
    * <p>
    * Checks if there already is an object with form data info in Camunda execution context and
-   * returns it if it exists or else reads form data from ceph
+   * returns it if it exists or else reads form data from storage
    *
    * @param bpmnElementId event or activity identifier
    * @return form data {@link UserFormDataDto} representation
@@ -56,8 +56,7 @@ public class SubmissionJuelFunction extends AbstractSubmissionJuelFunction {
       return storedObject;
     }
 
-    var cephKey = getCephKey(bpmnElementId, execution);
-    var formData = getFormDataFromCeph(cephKey);
+    var formData = getFormDataFromStorage(bpmnElementId, execution);
     var data = formData.map(FormDataDto::getData).map(Spin::JSON).orElse(null);
     var userFormData = new UserFormDataDto(data);
 

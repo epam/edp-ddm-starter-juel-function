@@ -26,11 +26,10 @@ import com.epam.digital.data.platform.dataaccessor.VariableAccessor;
 import com.epam.digital.data.platform.dataaccessor.VariableAccessorFactory;
 import com.epam.digital.data.platform.dataaccessor.named.NamedVariableReadAccessor;
 import com.epam.digital.data.platform.dataaccessor.sysvar.StartFormCephKeyVariable;
-import com.epam.digital.data.platform.el.juel.ceph.CephKeyProvider;
 import com.epam.digital.data.platform.el.juel.dto.SignUserFormDataDto;
-import com.epam.digital.data.platform.integration.ceph.dto.FormDataDto;
-import com.epam.digital.data.platform.integration.ceph.service.FormDataCephService;
-import com.epam.digital.data.platform.integration.ceph.service.impl.FormDataCephServiceImpl;
+import com.epam.digital.data.platform.storage.form.dto.FormDataDto;
+import com.epam.digital.data.platform.storage.form.dto.FormDataWrapperDto;
+import com.epam.digital.data.platform.storage.form.service.FormDataStorageService;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -54,9 +53,9 @@ class SignSubmissionJuelFunctionTest {
   @Mock
   private ApplicationContext applicationContext;
   @Mock
-  private CephKeyProvider cephKeyProvider;
+  private FormDataStorageService formDataStorageService;
   @Mock
-  private FormDataCephServiceImpl formDataCephService;
+  private FormDataWrapperDto formDataWrapperDto;
   @Mock
   private FormDataDto formDataDto;
   @Mock
@@ -110,10 +109,13 @@ class SignSubmissionJuelFunctionTest {
     var data = new LinkedHashMap<String, Object>();
     data.put("userName", "testuser");
     when(executionEntity.getProcessInstanceId()).thenReturn(processInstanceId);
-    when(applicationContext.getBean(CephKeyProvider.class)).thenReturn(cephKeyProvider);
-    when(cephKeyProvider.generateKey(taskDefinitionKey, processInstanceId)).thenReturn(cephKey);
-    when(applicationContext.getBean(FormDataCephService.class)).thenReturn(formDataCephService);
-    when(formDataCephService.getFormData(cephKey)).thenReturn(Optional.of(formDataDto));
+    when(applicationContext.getBean(FormDataStorageService.class)).thenReturn(
+        formDataStorageService);
+    when(
+        formDataStorageService.getFormDataWithKey(taskDefinitionKey, processInstanceId)).thenReturn(
+        Optional.of(formDataWrapperDto));
+    when(formDataWrapperDto.getFormData()).thenReturn(formDataDto);
+    when(formDataWrapperDto.getStorageKey()).thenReturn(cephKey);
     when(formDataDto.getData()).thenReturn(data);
     when(formDataDto.getSignature()).thenReturn(signature);
 
@@ -137,8 +139,12 @@ class SignSubmissionJuelFunctionTest {
     when(startFormCephKeyVariable.from(executionEntity))
         .thenReturn(startFormCephKeyReadAccessor);
     when(startFormCephKeyReadAccessor.get()).thenReturn(cephKey);
-    when(applicationContext.getBean(FormDataCephService.class)).thenReturn(formDataCephService);
-    when(formDataCephService.getFormData(cephKey)).thenReturn(Optional.of(formDataDto));
+    when(applicationContext.getBean(FormDataStorageService.class)).thenReturn(
+        formDataStorageService);
+    when(formDataStorageService.getFormDataWithKey(cephKey)).thenReturn(
+        Optional.of(formDataWrapperDto));
+    when(formDataWrapperDto.getFormData()).thenReturn(formDataDto);
+    when(formDataWrapperDto.getStorageKey()).thenReturn(cephKey);
     when(formDataDto.getData()).thenReturn(data);
     when(formDataDto.getSignature()).thenReturn(signature);
 
@@ -152,14 +158,14 @@ class SignSubmissionJuelFunctionTest {
 
   @Test
   void shouldReturnNullCephKeyIfDocumentNotExists() {
-    var cephKey = "cephKey";
     var taskDefinitionKey = "task";
     var processInstanceId = "processInstanceId";
     when(executionEntity.getProcessInstanceId()).thenReturn(processInstanceId);
-    when(applicationContext.getBean(CephKeyProvider.class)).thenReturn(cephKeyProvider);
-    when(cephKeyProvider.generateKey(taskDefinitionKey, processInstanceId)).thenReturn(cephKey);
-    when(applicationContext.getBean(FormDataCephService.class)).thenReturn(formDataCephService);
-    when(formDataCephService.getFormData(cephKey)).thenReturn(Optional.empty());
+    when(applicationContext.getBean(FormDataStorageService.class)).thenReturn(
+        formDataStorageService);
+    when(
+        formDataStorageService.getFormDataWithKey(taskDefinitionKey, processInstanceId)).thenReturn(
+        Optional.empty());
 
     var signUserFormDataDto = SignSubmissionJuelFunction.sign_submission(taskDefinitionKey);
 

@@ -16,7 +16,7 @@
 
 package com.epam.digital.data.platform.el.juel.it;
 
-import com.epam.digital.data.platform.integration.ceph.dto.FormDataDto;
+import com.epam.digital.data.platform.storage.form.dto.FormDataDto;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.camunda.bpm.engine.test.Deployment;
@@ -36,8 +36,7 @@ class SignSubmissionJuelFunctionIT extends BaseIT {
 
     var processInstance = runtimeService().startProcessInstanceByKey(processDefinitionKey);
 
-    var cephKey = cephKeyProvider().generateKey(taskDefinitionKey, processInstance.getId());
-    formDataCephService().putFormData(cephKey,
+    formDataStorageService().putFormData(taskDefinitionKey, processInstance.getId(),
         FormDataDto.builder().data(data).signature(signature).build());
 
     String taskId = taskService().createTaskQuery().taskDefinitionKey(taskDefinitionKey)
@@ -59,7 +58,7 @@ class SignSubmissionJuelFunctionIT extends BaseIT {
 
     var processInstance = runtimeService().startProcessInstanceByKey(processDefinitionKey, vars);
 
-    formDataCephService().putFormData("testSignatureDocumentId",
+    formDataStorageService().putFormData("testSignatureDocumentId",
         FormDataDto.builder().data(data).signature(signature).build());
 
     String taskId = taskService().createTaskQuery().taskDefinitionKey(taskDefinitionKey)
