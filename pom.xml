@@ -24,7 +24,7 @@
     <spring.boot.version>2.3.9.RELEASE</spring.boot.version>
 
     <ddm-starter-security.version>1.5.0-SNAPSHOT</ddm-starter-security.version>
-    <ddm-form-data-storage.version>1.5.1-SNAPSHOT</ddm-form-data-storage.version>
+    <ddm-form-data-storage.version>1.5.2-SNAPSHOT</ddm-form-data-storage.version>
     <ddm-bpm-data-accessor.version>1.5.1-SNAPSHOT</ddm-bpm-data-accessor.version>
 
     <keycloak-admin-client.version>13.0.1</keycloak-admin-client.version>
