@@ -18,6 +18,7 @@
     <sonar.coverage.exclusions>**/digital/data/platform/el/juel/dto/**/*</sonar.coverage.exclusions>
 
     <java.version>11</java.version>
+	  <log4j.version>2.16.0</log4j.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
@@ -43,6 +44,16 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+	    <dependency>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-api</artifactId>
+		    <version>${log4j.version}</version>
+		  </dependency>
+      <dependency>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-core</artifactId>
+		    <version>${log4j.version}</version>
+		  </dependency>
     </dependencies>
   </dependencyManagement>
 
