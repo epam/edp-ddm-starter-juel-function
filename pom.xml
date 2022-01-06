@@ -7,26 +7,24 @@
   <parent>
     <groupId>com.epam.digital.data.platform</groupId>
     <artifactId>low-code-platform-parent</artifactId>
-    <version>1.2.0</version>
+    <version>1.5.1-SNAPSHOT</version>
     <relativePath/>
   </parent>
 
   <artifactId>ddm-starter-juel-function</artifactId>
-  <version>1.5.4-SNAPSHOT</version>
+  <version>1.5.5-SNAPSHOT</version>
 
   <properties>
     <sonar.coverage.exclusions>**/digital/data/platform/el/juel/dto/**/*</sonar.coverage.exclusions>
 
     <java.version>11</java.version>
-	  <log4j.version>2.16.0</log4j.version>
+    <log4j.version>2.17.0</log4j.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
-    <spring.boot.version>2.3.9.RELEASE</spring.boot.version>
-
-    <ddm-starter-security.version>1.5.0-SNAPSHOT</ddm-starter-security.version>
+    <ddm-starter-security.version>1.5.1-SNAPSHOT</ddm-starter-security.version>
     <ddm-form-data-storage.version>1.5.2-SNAPSHOT</ddm-form-data-storage.version>
-    <ddm-bpm-data-accessor.version>1.5.1-SNAPSHOT</ddm-bpm-data-accessor.version>
+    <ddm-bpm-data-accessor.version>1.5.7-SNAPSHOT</ddm-bpm-data-accessor.version>
 
     <keycloak-admin-client.version>13.0.1</keycloak-admin-client.version>
 
@@ -37,13 +35,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${spring.boot.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
 	    <dependency>
 		    <groupId>org.apache.logging.log4j</groupId>
 		    <artifactId>log4j-api</artifactId>
@@ -58,10 +49,6 @@
   </dependencyManagement>
 
   <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
