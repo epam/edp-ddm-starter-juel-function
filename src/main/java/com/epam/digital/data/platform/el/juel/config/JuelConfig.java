@@ -18,12 +18,13 @@ package com.epam.digital.data.platform.el.juel.config;
 
 import com.epam.digital.data.platform.el.juel.AbstractApplicationContextAwareJuelFunction;
 import com.epam.digital.data.platform.el.juel.keycloak.KeycloakProvider;
-import org.keycloak.OAuth2Constants;
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.KeycloakBuilder;
+import com.epam.digital.data.platform.integration.idm.client.KeycloakAdminClient;
+import com.epam.digital.data.platform.integration.idm.dto.KeycloakClientProperties;
+import com.epam.digital.data.platform.integration.idm.factory.IdmClientFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -39,23 +40,21 @@ public class JuelConfig {
 
   @Bean
   @ConditionalOnProperty(prefix = "keycloak", name = {"url", "system-user.realm"})
-  public Keycloak systemUserKeycloak(
-      @Value("${keycloak.url}") String serverUrl,
-      @Value("${keycloak.system-user.realm}") String realm,
-      @Value("${keycloak.system-user.client-id}") String clientId,
-      @Value("${keycloak.system-user.client-secret}") String clientSecret) {
-    return KeycloakBuilder.builder()
-        .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-        .clientSecret(clientSecret)
-        .serverUrl(serverUrl)
-        .clientId(clientId)
-        .realm(realm)
-        .build();
+  @ConfigurationProperties(prefix = "keycloak.system-user")
+  public KeycloakClientProperties systemUserKeycloakClientProperties() {
+    return new KeycloakClientProperties();
+  }
+
+  @Bean("system-user-keycloak-admin-client")
+  @ConditionalOnBean(name = "systemUserKeycloakClientProperties")
+  public KeycloakAdminClient systemUserKeycloakAdminClient(@Value("${keycloak.url}") String url,
+      KeycloakClientProperties systemUserKeycloakClientProperties) {
+    return new IdmClientFactory().keycloakAdminClient(url, systemUserKeycloakClientProperties);
   }
 
   @Bean
-  @ConditionalOnBean(Keycloak.class)
-  public KeycloakProvider keycloakProvider(Keycloak systemUserKeycloak) {
+  @ConditionalOnBean(name = "system-user-keycloak-admin-client")
+  public KeycloakProvider keycloakProvider(KeycloakAdminClient systemUserKeycloak) {
     return new KeycloakProvider(systemUserKeycloak);
   }
 }

@@ -16,16 +16,16 @@
 
 package com.epam.digital.data.platform.el.juel.keycloak;
 
+import com.epam.digital.data.platform.integration.idm.client.KeycloakAdminClient;
 import lombok.RequiredArgsConstructor;
-import org.keycloak.admin.client.Keycloak;
 
 @RequiredArgsConstructor
 public class KeycloakProvider {
 
-  private final Keycloak systemUserKeycloak;
+  private final KeycloakAdminClient systemUserKeycloak;
 
   public String getSystemUserAccessToken() {
-    return systemUserKeycloak.tokenManager().getAccessTokenString();
+    return systemUserKeycloak.getAccessTokenString();
   }
 
 }
