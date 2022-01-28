@@ -21,6 +21,7 @@ import com.epam.digital.data.platform.el.juel.keycloak.KeycloakProvider;
 import com.epam.digital.data.platform.integration.idm.client.KeycloakAdminClient;
 import com.epam.digital.data.platform.integration.idm.dto.KeycloakClientProperties;
 import com.epam.digital.data.platform.integration.idm.factory.IdmClientFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -54,7 +55,8 @@ public class JuelConfig {
 
   @Bean
   @ConditionalOnBean(name = "system-user-keycloak-admin-client")
-  public KeycloakProvider keycloakProvider(KeycloakAdminClient systemUserKeycloak) {
-    return new KeycloakProvider(systemUserKeycloak);
+  public KeycloakProvider keycloakProvider(
+      @Qualifier("system-user-keycloak-admin-client") KeycloakAdminClient systemUserKeycloakAdminClient) {
+    return new KeycloakProvider(systemUserKeycloakAdminClient);
   }
 }
