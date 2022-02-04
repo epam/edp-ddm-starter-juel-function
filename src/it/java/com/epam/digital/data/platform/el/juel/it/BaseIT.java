@@ -17,6 +17,7 @@
 package com.epam.digital.data.platform.el.juel.it;
 
 import com.epam.digital.data.platform.storage.form.service.FormDataStorageService;
+import com.epam.digital.data.platform.storage.message.service.MessagePayloadStorageService;
 import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.util.Objects;
@@ -43,6 +44,8 @@ public abstract class BaseIT {
   private TaskService taskService;
   @Autowired
   private FormDataStorageService formDataStorageService;
+  @Autowired
+  private MessagePayloadStorageService messagePayloadStorageService;
 
   private String accessToken;
 
@@ -65,6 +68,10 @@ public abstract class BaseIT {
 
   protected FormDataStorageService formDataStorageService() {
     return formDataStorageService;
+  }
+
+  protected MessagePayloadStorageService messagePayloadStorageService() {
+    return messagePayloadStorageService;
   }
 
   protected String getContentFromFile(String filePath) throws IOException {

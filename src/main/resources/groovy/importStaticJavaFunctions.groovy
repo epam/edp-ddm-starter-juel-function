@@ -26,3 +26,4 @@ system_user = com.epam.digital.data.platform.el.juel.SystemUserJuelFunction.&sys
 get_variable = com.epam.digital.data.platform.el.juel.GetVariableJuelFunction.&get_variable
 set_variable = com.epam.digital.data.platform.el.juel.SetVariableJuelFunction.&set_variable
 set_transient_variable = com.epam.digital.data.platform.el.juel.SetTransientVariableJuelFunction.&set_transient_variable
+message_payload = com.epam.digital.data.platform.el.juel.MessagePayloadJuelFunction.&message_payload

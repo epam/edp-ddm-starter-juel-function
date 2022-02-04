@@ -16,14 +16,12 @@
 
 package com.epam.digital.data.platform.el.juel.it.config;
 
-import com.epam.digital.data.platform.integration.ceph.service.CephService;
-import com.epam.digital.data.platform.storage.form.repository.CephFormDataRepository;
 import com.epam.digital.data.platform.storage.form.repository.FormDataRepository;
 import com.epam.digital.data.platform.storage.form.service.FormDataKeyProviderImpl;
 import com.epam.digital.data.platform.storage.form.service.FormDataStorageService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import com.epam.digital.data.platform.storage.message.repository.MessagePayloadRepository;
+import com.epam.digital.data.platform.storage.message.service.MessagePayloadKeyProviderImpl;
+import com.epam.digital.data.platform.storage.message.service.MessagePayloadStorageService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,6 +38,20 @@ public class TestCephConfig {
     return FormDataStorageService.builder()
         .keyProvider(new FormDataKeyProviderImpl())
         .repository(formDataRepository)
+        .build();
+  }
+
+  @Bean
+  public MessagePayloadRepository messagePayloadRepository() {
+    return new TestMessagePayloadRepository();
+  }
+
+  @Bean
+  public MessagePayloadStorageService messagePayloadStorageService(
+      MessagePayloadRepository messagePayloadRepository) {
+    return MessagePayloadStorageService.builder()
+        .keyProvider(new MessagePayloadKeyProviderImpl())
+        .repository(messagePayloadRepository)
         .build();
   }
 }
