@@ -27,3 +27,4 @@ get_variable = com.epam.digital.data.platform.el.juel.GetVariableJuelFunction.&g
 set_variable = com.epam.digital.data.platform.el.juel.SetVariableJuelFunction.&set_variable
 set_transient_variable = com.epam.digital.data.platform.el.juel.SetTransientVariableJuelFunction.&set_transient_variable
 message_payload = com.epam.digital.data.platform.el.juel.MessagePayloadJuelFunction.&message_payload
+process_caller = com.epam.digital.data.platform.el.juel.ProcessCallerJuelFunction.&process_caller
