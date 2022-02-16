@@ -17,7 +17,7 @@
 package com.epam.digital.data.platform.el.juel;
 
 import com.epam.digital.data.platform.el.juel.dto.UserDto;
-import com.epam.digital.data.platform.el.juel.keycloak.KeycloakProvider;
+import com.epam.digital.data.platform.integration.idm.service.IdmService;
 import org.springframework.stereotype.Component;
 
 /**
@@ -52,8 +52,8 @@ public class SystemUserJuelFunction extends AbstractApplicationContextAwareJuelF
       return storedObject;
     }
 
-    var keycloakProvider = getBean(KeycloakProvider.class);
-    var accessToken = keycloakProvider.getSystemUserAccessToken();
+    var idmService = getBean(IdmService.class);
+    var accessToken = idmService.getClientAccessToken();
     var claims = parseClaims(accessToken);
 
     var systemUser = new UserDto(claims.getPreferredUsername(), accessToken, claims);

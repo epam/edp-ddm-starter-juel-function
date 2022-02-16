@@ -12,7 +12,7 @@
   </parent>
 
   <artifactId>ddm-starter-juel-function</artifactId>
-  <version>1.5.6-SNAPSHOT</version>
+  <version>1.5.7-SNAPSHOT</version>
 
   <properties>
     <sonar.coverage.exclusions>**/digital/data/platform/el/juel/dto/**/*</sonar.coverage.exclusions>
@@ -25,7 +25,7 @@
     <ddm-starter-security.version>1.5.1-SNAPSHOT</ddm-starter-security.version>
     <ddm-form-data-storage.version>1.5.2-SNAPSHOT</ddm-form-data-storage.version>
     <ddm-bpm-data-accessor.version>1.5.7-SNAPSHOT</ddm-bpm-data-accessor.version>
-    <ddm-idm-client.version>1.5.0-SNAPSHOT</ddm-idm-client.version>
+    <ddm-idm-client.version>1.5.1-SNAPSHOT</ddm-idm-client.version>
 
     <guava.version>29.0-jre</guava.version>
     <camunda.bpm.assert.version>7.0.0</camunda.bpm.assert.version>

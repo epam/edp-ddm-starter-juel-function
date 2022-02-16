@@ -6,7 +6,7 @@ spring:
     password: password
 
 keycloak:
-  url: http://localhost:8200/auth
+  url: http://localhost:8200
   system-user:
     realm: test-realm
     client-id: client-id

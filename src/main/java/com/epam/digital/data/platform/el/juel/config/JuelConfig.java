@@ -17,18 +17,18 @@
 package com.epam.digital.data.platform.el.juel.config;
 
 import com.epam.digital.data.platform.el.juel.AbstractApplicationContextAwareJuelFunction;
-import com.epam.digital.data.platform.el.juel.keycloak.KeycloakProvider;
-import com.epam.digital.data.platform.integration.idm.client.KeycloakAdminClient;
-import com.epam.digital.data.platform.integration.idm.dto.KeycloakClientProperties;
-import com.epam.digital.data.platform.integration.idm.factory.IdmClientFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
+import com.epam.digital.data.platform.integration.idm.config.IdmClientServiceConfig;
+import com.epam.digital.data.platform.integration.idm.factory.IdmServiceFactory;
+import com.epam.digital.data.platform.integration.idm.model.KeycloakClientProperties;
+import com.epam.digital.data.platform.integration.idm.service.IdmService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * The class represents a holder for beans of the camunda configuration. Each method produces a bean
@@ -36,8 +36,12 @@ import org.springframework.context.annotation.Configuration;
  * should create, set up and return an instance of a bean.
  */
 @Configuration
+@Import(IdmClientServiceConfig.class)
 @ComponentScan(basePackageClasses = AbstractApplicationContextAwareJuelFunction.class)
 public class JuelConfig {
+
+  @Autowired
+  public IdmServiceFactory idmServiceFactory;
 
   @Bean
   @ConditionalOnProperty(prefix = "keycloak", name = {"url", "system-user.realm"})
@@ -46,17 +50,12 @@ public class JuelConfig {
     return new KeycloakClientProperties();
   }
 
-  @Bean("system-user-keycloak-admin-client")
+  @Bean("system-user-keycloak-client-service")
   @ConditionalOnBean(name = "systemUserKeycloakClientProperties")
-  public KeycloakAdminClient systemUserKeycloakAdminClient(@Value("${keycloak.url}") String url,
-      KeycloakClientProperties systemUserKeycloakClientProperties) {
-    return new IdmClientFactory().keycloakAdminClient(url, systemUserKeycloakClientProperties);
+  public IdmService systemUserIdmService(KeycloakClientProperties systemUserKeycloakClientProperties) {
+    return idmServiceFactory.createIdmService(systemUserKeycloakClientProperties.getRealm(),
+        systemUserKeycloakClientProperties.getClientId(),
+        systemUserKeycloakClientProperties.getClientSecret());
   }
 
-  @Bean
-  @ConditionalOnBean(name = "system-user-keycloak-admin-client")
-  public KeycloakProvider keycloakProvider(
-      @Qualifier("system-user-keycloak-admin-client") KeycloakAdminClient systemUserKeycloakAdminClient) {
-    return new KeycloakProvider(systemUserKeycloakAdminClient);
-  }
 }
