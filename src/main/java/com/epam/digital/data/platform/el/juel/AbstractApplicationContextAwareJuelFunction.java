@@ -72,6 +72,11 @@ public abstract class AbstractApplicationContextAwareJuelFunction implements
         .getBean(beanType);
   }
 
+  protected static <T> T getBean(String name, @NonNull Class<T> beanType) {
+    return Objects.requireNonNull(applicationContext, "Spring app context isn't initialized yet")
+        .getBean(name, beanType);
+  }
+
   protected static VariableAccessor getVariableAccessor() {
     return getVariableAccessor(getExecution());
   }

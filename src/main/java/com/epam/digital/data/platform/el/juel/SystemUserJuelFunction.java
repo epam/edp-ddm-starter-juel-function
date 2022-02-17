@@ -52,7 +52,7 @@ public class SystemUserJuelFunction extends AbstractApplicationContextAwareJuelF
       return storedObject;
     }
 
-    var idmService = getBean(IdmService.class);
+    var idmService = getBean("system-user-keycloak-client-service", IdmService.class);
     var accessToken = idmService.getClientAccessToken();
     var claims = parseClaims(accessToken);
 
