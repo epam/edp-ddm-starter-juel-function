@@ -85,16 +85,6 @@ class InitiatorJuelFunctionTest {
   }
 
   @Test
-  void initiatorNoToken() {
-    var expectName = "userDto";
-    when(initiatorVariablesReadAccessor.getInitiatorName()).thenReturn(Optional.of(expectName));
-
-    var result = InitiatorJuelFunction.initiator();
-
-    assertSame(expectName, result.getUserName());
-  }
-
-  @Test
   void initiatorWithToken() {
     var expectName = "userDto";
     var token = "token";

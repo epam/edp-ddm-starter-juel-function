@@ -19,6 +19,11 @@ package com.epam.digital.data.platform.el.juel.it;
 import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.assertThat;
 
 import java.util.Map;
+import java.util.UUID;
+
+import com.epam.digital.data.platform.storage.form.dto.FormDataDto;
+import com.epam.digital.data.platform.storage.form.service.FormDataKeyProvider;
+import com.epam.digital.data.platform.storage.form.service.FormDataKeyProviderImpl;
 import org.camunda.bpm.engine.test.Deployment;
 import org.junit.jupiter.api.Test;
 
@@ -30,6 +35,36 @@ class InitiatorJuelFunctionIT extends BaseIT {
 
     var processInstance = runtimeService().startProcessInstanceByKey("initiator_juel_function", "",
         Map.of("initiator", TOKEN_USER_NAME, "initiator_access_token", accessToken()));
+
+    assertThat(processInstance).isEnded();
+  }
+
+  @Test
+  @Deployment(resources = {"bpmn/initiator_juel_function2.bpmn"})
+  void shouldReceiveAccessTokenFromForm() {
+    FormDataKeyProvider d = new FormDataKeyProviderImpl();
+    String processDefinitionKey = "initiator_juel_function2";
+    UUID uuid = UUID.randomUUID();
+    String initiatorJuelFunction = d.generateStartFormKey(processDefinitionKey, uuid.toString());
+    formDataStorageService().putStartFormData(processDefinitionKey, uuid.toString(),
+            FormDataDto.builder().accessToken(accessToken()).build());
+    var processInstance = runtimeService().startProcessInstanceByKey(processDefinitionKey, "",
+            Map.of("start_form_ceph_key", initiatorJuelFunction));
+
+    assertThat(processInstance).isEnded();
+  }
+
+  @Test
+  @Deployment(resources = {"bpmn/initiator_juel_function3.bpmn"})
+  void shouldReceiveAccessTokenFromContextThenFromForm() {
+    FormDataKeyProvider d = new FormDataKeyProviderImpl();
+    String processDefinitionKey = "initiator_juel_function3";
+    UUID uuid = UUID.randomUUID();
+    String initiatorJuelFunction = d.generateStartFormKey(processDefinitionKey, uuid.toString());
+    formDataStorageService().putStartFormData(processDefinitionKey, uuid.toString(),
+            FormDataDto.builder().accessToken(accessToken()).build());
+    var processInstance = runtimeService().startProcessInstanceByKey(processDefinitionKey, "",
+            Map.of("start_form_ceph_key", initiatorJuelFunction, "initiator_access_token", accessToken()));
 
     assertThat(processInstance).isEnded();
   }
