@@ -40,9 +40,6 @@ import org.springframework.context.annotation.Import;
 @ComponentScan(basePackageClasses = AbstractApplicationContextAwareJuelFunction.class)
 public class JuelConfig {
 
-  @Autowired
-  public IdmServiceFactory idmServiceFactory;
-
   @Bean
   @ConditionalOnProperty(prefix = "keycloak", name = {"url", "system-user.realm"})
   @ConfigurationProperties(prefix = "keycloak.system-user")
@@ -52,7 +49,8 @@ public class JuelConfig {
 
   @Bean("system-user-keycloak-client-service")
   @ConditionalOnBean(name = "systemUserKeycloakClientProperties")
-  public IdmService systemUserIdmService(KeycloakClientProperties systemUserKeycloakClientProperties) {
+  public IdmService systemUserIdmService(KeycloakClientProperties systemUserKeycloakClientProperties,
+                                         IdmServiceFactory idmServiceFactory) {
     return idmServiceFactory.createIdmService(systemUserKeycloakClientProperties.getRealm(),
         systemUserKeycloakClientProperties.getClientId(),
         systemUserKeycloakClientProperties.getClientSecret());

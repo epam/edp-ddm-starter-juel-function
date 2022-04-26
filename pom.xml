@@ -25,7 +25,7 @@
     <ddm-starter-security.version>1.6.0.1</ddm-starter-security.version>
     <ddm-form-data-storage.version>1.6.0.1</ddm-form-data-storage.version>
     <ddm-bpm-data-accessor.version>1.6.0.1</ddm-bpm-data-accessor.version>
-    <ddm-idm-client.version>1.6.0.1</ddm-idm-client.version>
+    <ddm-idm-client.version>1.6.0.5</ddm-idm-client.version>
 
     <guava.version>29.0-jre</guava.version>
     <camunda.bpm.assert.version>7.0.0</camunda.bpm.assert.version>
