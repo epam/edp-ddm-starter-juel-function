@@ -36,4 +36,9 @@ public class TestCephFormDataRepository implements FormDataRepository {
   public void delete(Set<String> keys) {
     keys.forEach(storage::remove);
   }
+
+  @Override
+  public Set<String> keys() {
+    throw new UnsupportedOperationException();
+  }
 }
