@@ -21,8 +21,8 @@ import com.epam.digital.data.platform.integration.idm.config.IdmClientServiceCon
 import com.epam.digital.data.platform.integration.idm.factory.IdmServiceFactory;
 import com.epam.digital.data.platform.integration.idm.model.KeycloakClientProperties;
 import com.epam.digital.data.platform.integration.idm.service.IdmService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -41,6 +41,7 @@ import org.springframework.context.annotation.Import;
 public class JuelConfig {
 
   @Bean
+  @ConditionalOnMissingBean
   @ConditionalOnProperty(prefix = "keycloak", name = {"url", "system-user.realm"})
   @ConfigurationProperties(prefix = "keycloak.system-user")
   public KeycloakClientProperties systemUserKeycloakClientProperties() {
@@ -48,6 +49,7 @@ public class JuelConfig {
   }
 
   @Bean("system-user-keycloak-client-service")
+  @ConditionalOnMissingBean
   @ConditionalOnBean(name = "systemUserKeycloakClientProperties")
   public IdmService systemUserIdmService(KeycloakClientProperties systemUserKeycloakClientProperties,
                                          IdmServiceFactory idmServiceFactory) {
