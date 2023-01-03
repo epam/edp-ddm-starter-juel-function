@@ -11,3 +11,6 @@ keycloak:
     realm: test-realm
     client-id: client-id
     client-secret: client-secret
+
+digital-document-service:
+  url: http://localhost:8201

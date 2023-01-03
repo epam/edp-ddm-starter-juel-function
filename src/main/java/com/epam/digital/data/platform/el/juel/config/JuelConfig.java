@@ -16,6 +16,7 @@
 
 package com.epam.digital.data.platform.el.juel.config;
 
+import com.epam.digital.data.platform.dgtldcmnt.config.InternalApiRestClientConfig;
 import com.epam.digital.data.platform.el.juel.AbstractApplicationContextAwareJuelFunction;
 import com.epam.digital.data.platform.integration.idm.config.IdmClientServiceConfig;
 import com.epam.digital.data.platform.integration.idm.factory.IdmServiceFactory;
@@ -36,7 +37,7 @@ import org.springframework.context.annotation.Import;
  * should create, set up and return an instance of a bean.
  */
 @Configuration
-@Import(IdmClientServiceConfig.class)
+@Import({IdmClientServiceConfig.class, InternalApiRestClientConfig.class})
 @ComponentScan(basePackageClasses = AbstractApplicationContextAwareJuelFunction.class)
 public class JuelConfig {
 
