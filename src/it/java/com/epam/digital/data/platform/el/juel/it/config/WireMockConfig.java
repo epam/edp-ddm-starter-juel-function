@@ -40,4 +40,15 @@ public class WireMockConfig {
     wireMockServer.start();
     return wireMockServer;
   }
+
+  @Bean(destroyMethod = "stop")
+  @Qualifier("digitalDocumentServiceMockServer")
+  public WireMockServer digitalDocumentServiceMockServer(@Value("${digital-document-service.url}") String urlStr)
+      throws MalformedURLException {
+    URL url = new URL(urlStr);
+    WireMockServer wireMockServer = new WireMockServer(wireMockConfig().port(url.getPort()));
+    WireMock.configureFor(url.getHost(), url.getPort());
+    wireMockServer.start();
+    return wireMockServer;
+  }
 }

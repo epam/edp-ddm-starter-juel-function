@@ -26,6 +26,7 @@
     <ddm-form-data-storage.version>1.8.0.1</ddm-form-data-storage.version>
     <ddm-bpm-data-accessor.version>1.6.0.1</ddm-bpm-data-accessor.version>
     <ddm-idm-client.version>1.6.0.5</ddm-idm-client.version>
+    <ddm-digital-document-client.version>1.9.0.3</ddm-digital-document-client.version>
     <ddm-message-payload-storage.version>1.8.0.1</ddm-message-payload-storage.version>
 
     <guava.version>29.0-jre</guava.version>
@@ -73,6 +74,11 @@
       <groupId>com.epam.digital.data.platform</groupId>
       <artifactId>ddm-idm-client</artifactId>
       <version>${ddm-idm-client.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.epam.digital.data.platform</groupId>
+      <artifactId>ddm-digital-document-client</artifactId>
+      <version>${ddm-digital-document-client.version}</version>
     </dependency>
 
     <dependency>
