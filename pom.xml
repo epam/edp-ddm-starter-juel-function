@@ -12,7 +12,7 @@
   </parent>
 
   <artifactId>ddm-starter-juel-function</artifactId>
-  <version>1.8.0</version>
+  <version>1.9.0</version>
 
   <properties>
     <sonar.coverage.exclusions>**/digital/data/platform/el/juel/dto/**/*</sonar.coverage.exclusions>
@@ -28,6 +28,7 @@
     <ddm-idm-client.version>1.6.0.5</ddm-idm-client.version>
     <ddm-digital-document-client.version>1.9.0.3</ddm-digital-document-client.version>
     <ddm-message-payload-storage.version>1.8.0.1</ddm-message-payload-storage.version>
+    <ddm-starter-trembita-integration.version>1.9.0.4</ddm-starter-trembita-integration.version>
 
     <guava.version>29.0-jre</guava.version>
     <camunda.bpm.assert.version>7.0.0</camunda.bpm.assert.version>
@@ -79,6 +80,11 @@
       <groupId>com.epam.digital.data.platform</groupId>
       <artifactId>ddm-digital-document-client</artifactId>
       <version>${ddm-digital-document-client.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.epam.digital.data.platform</groupId>
+      <artifactId>ddm-starter-trembita-integration</artifactId>
+      <version>${ddm-starter-trembita-integration.version}</version>
     </dependency>
 
     <dependency>

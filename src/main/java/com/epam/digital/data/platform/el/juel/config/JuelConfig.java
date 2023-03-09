@@ -22,6 +22,7 @@ import com.epam.digital.data.platform.integration.idm.config.IdmClientServiceCon
 import com.epam.digital.data.platform.integration.idm.factory.IdmServiceFactory;
 import com.epam.digital.data.platform.integration.idm.model.KeycloakClientProperties;
 import com.epam.digital.data.platform.integration.idm.service.IdmService;
+import com.epam.digital.data.platform.starter.trembita.integration.base.config.TrembitaExchangeGatewayProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -37,7 +38,10 @@ import org.springframework.context.annotation.Import;
  * should create, set up and return an instance of a bean.
  */
 @Configuration
-@Import({IdmClientServiceConfig.class, InternalApiRestClientConfig.class})
+@Import({
+  IdmClientServiceConfig.class,
+  InternalApiRestClientConfig.class
+})
 @ComponentScan(basePackageClasses = AbstractApplicationContextAwareJuelFunction.class)
 public class JuelConfig {
 

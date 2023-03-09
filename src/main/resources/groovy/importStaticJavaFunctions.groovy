@@ -29,3 +29,4 @@ set_transient_variable = com.epam.digital.data.platform.el.juel.SetTransientVari
 message_payload = com.epam.digital.data.platform.el.juel.MessagePayloadJuelFunction.&message_payload
 process_caller = com.epam.digital.data.platform.el.juel.ProcessCallerJuelFunction.&process_caller
 save_digital_document_from_url = com.epam.digital.data.platform.el.juel.SaveDigitalDocumentFromUrlJuelFunction.&save_digital_document_from_url
+get_trembita_auth_token = com.epam.digital.data.platform.el.juel.GetTrembitaAuthTokenJuelFunction.&get_trembita_auth_token

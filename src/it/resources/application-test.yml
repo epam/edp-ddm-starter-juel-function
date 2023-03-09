@@ -14,3 +14,25 @@ keycloak:
 
 digital-document-service:
   url: http://localhost:8201
+
+trembita:
+  registries:
+    some-registry:
+      url: http://localhost:7788/trembita-mock-server
+      user-id: DDM
+      protocol-version: 4.0
+      protocol: "SOAP"
+      client:
+        x-road-instance: CLIENT-TEST
+        member-class: GOV
+        member-code: 666777666
+        subsystem-code: GOV_test
+      service:
+        x-road-instance: EDR-TEST
+        member-class: GOV
+        member-code: 11115888
+        subsystem-code: EDR_test
+      auth:
+        type: "AUTH_TOKEN"
+        secret:
+          token: "token"
