@@ -18,8 +18,11 @@ package com.epam.digital.data.platform.el.juel.dto;
 
 import com.epam.digital.data.platform.starter.security.dto.JwtClaimsDto;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -74,5 +77,19 @@ public class UserDto {
 
   public Boolean isRepresentative() {
     return jwtClaimsDto == null ? null : jwtClaimsDto.isRepresentative();
+  }
+
+  public Map<String, List<String>> getAttributes() {
+    return jwtClaimsDto == null ? new HashMap<>() : jwtClaimsDto.getOtherClaims().entrySet()
+        .stream()
+        .collect(Collectors.toMap(Map.Entry::getKey,
+            e -> {
+              var value = e.getValue();
+              if (value instanceof List) {
+                return (List<String>) value;
+              } else {
+                return List.of((String) value);
+              }
+            }));
   }
 }
