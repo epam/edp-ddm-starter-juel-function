@@ -18,6 +18,7 @@ package com.epam.digital.data.platform.el.juel.it;
 
 import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.assertThat;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -65,6 +66,16 @@ class InitiatorJuelFunctionIT extends BaseIT {
             FormDataDto.builder().accessToken(accessToken()).build());
     var processInstance = runtimeService().startProcessInstanceByKey(processDefinitionKey, "",
             Map.of("start_form_ceph_key", initiatorJuelFunction, "initiator_access_token", accessToken()));
+
+    assertThat(processInstance).isEnded();
+  }
+
+  @Test
+  @Deployment(resources = {"bpmn/initiator_juel_function_attributes.bpmn"})
+  void shouldContainUserCustomAttributes() throws IOException {
+
+    var processInstance = runtimeService().startProcessInstanceByKey("initiator_juel_function_attributes", "",
+        Map.of("initiator", TOKEN_USER_NAME, "initiator_access_token", getContentFromFile("/testUserAccessTokenWithAttributes.txt")));
 
     assertThat(processInstance).isEnded();
   }
