@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 EPAM Systems.
+ * Copyright 2023 EPAM Systems.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 
 package com.epam.digital.data.platform.el.juel;
 
-import com.epam.digital.data.platform.bpms.api.dto.enums.PlatformHttpHeader;
+import static com.epam.digital.data.platform.el.juel.util.Utils.createHeaders;
+
 import com.epam.digital.data.platform.dgtldcmnt.client.DigitalDocumentServiceInternalApiRestClient;
 import com.epam.digital.data.platform.dgtldcmnt.dto.RemoteDocumentDto;
 import com.epam.digital.data.platform.dgtldcmnt.dto.RemoteDocumentMetadataDto;
@@ -24,8 +25,6 @@ import com.epam.digital.data.platform.el.juel.dto.DocumentMetadata;
 import com.epam.digital.data.platform.integration.idm.service.IdmService;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.UUID;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 /**
@@ -75,15 +74,6 @@ public class SaveDigitalDocumentFromUrlJuelFunction extends
         createHeaders(accessToken));
 
     return toDocumentMetadata(metadataDto);
-  }
-
-  private static HttpHeaders createHeaders(String accessToken) {
-    var headers = new HttpHeaders();
-    headers.add(PlatformHttpHeader.X_ACCESS_TOKEN.getName(), accessToken);
-    var requestXsrfToken = UUID.randomUUID().toString();
-    headers.add(PlatformHttpHeader.X_XSRF_TOKEN.getName(), requestXsrfToken);
-    headers.add("Cookie", String.format("%s=%s", "XSRF-TOKEN", requestXsrfToken));
-    return headers;
   }
 
   private static DocumentMetadata toDocumentMetadata(RemoteDocumentMetadataDto metadataDto) {

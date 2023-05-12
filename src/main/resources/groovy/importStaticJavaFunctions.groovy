@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 EPAM Systems.
+ * Copyright 2023 EPAM Systems.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,3 +30,4 @@ message_payload = com.epam.digital.data.platform.el.juel.MessagePayloadJuelFunct
 process_caller = com.epam.digital.data.platform.el.juel.ProcessCallerJuelFunction.&process_caller
 save_digital_document_from_url = com.epam.digital.data.platform.el.juel.SaveDigitalDocumentFromUrlJuelFunction.&save_digital_document_from_url
 get_trembita_auth_token = com.epam.digital.data.platform.el.juel.GetTrembitaAuthTokenJuelFunction.&get_trembita_auth_token
+load_digital_document = com.epam.digital.data.platform.el.juel.LoadDigitalDocumentJuelFunction.&load_digital_document
