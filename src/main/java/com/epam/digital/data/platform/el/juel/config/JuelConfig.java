@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 EPAM Systems.
+ * Copyright 2023 EPAM Systems.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import com.epam.digital.data.platform.integration.idm.config.IdmClientServiceCon
 import com.epam.digital.data.platform.integration.idm.factory.IdmServiceFactory;
 import com.epam.digital.data.platform.integration.idm.model.KeycloakClientProperties;
 import com.epam.digital.data.platform.integration.idm.service.IdmService;
-import com.epam.digital.data.platform.starter.trembita.integration.base.config.TrembitaExchangeGatewayProperties;
+import org.apache.tika.Tika;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -39,8 +39,8 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration
 @Import({
-  IdmClientServiceConfig.class,
-  InternalApiRestClientConfig.class
+    IdmClientServiceConfig.class,
+    InternalApiRestClientConfig.class
 })
 @ComponentScan(basePackageClasses = AbstractApplicationContextAwareJuelFunction.class)
 public class JuelConfig {
@@ -56,11 +56,17 @@ public class JuelConfig {
   @Bean("system-user-keycloak-client-service")
   @ConditionalOnMissingBean
   @ConditionalOnBean(name = "systemUserKeycloakClientProperties")
-  public IdmService systemUserIdmService(KeycloakClientProperties systemUserKeycloakClientProperties,
-                                         IdmServiceFactory idmServiceFactory) {
+  public IdmService systemUserIdmService(
+      KeycloakClientProperties systemUserKeycloakClientProperties,
+      IdmServiceFactory idmServiceFactory) {
     return idmServiceFactory.createIdmService(systemUserKeycloakClientProperties.getRealm(),
         systemUserKeycloakClientProperties.getClientId(),
         systemUserKeycloakClientProperties.getClientSecret());
   }
 
+  @Bean
+  @ConditionalOnMissingBean
+  public Tika tika() {
+    return new Tika();
+  }
 }

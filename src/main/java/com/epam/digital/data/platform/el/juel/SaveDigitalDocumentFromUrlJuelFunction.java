@@ -28,7 +28,8 @@ import java.net.URL;
 import org.springframework.stereotype.Component;
 
 /**
- * Class with JUEL function that gains access to a context variables
+ * Class with JUEL function that used for saving files from remote storage in digital-document
+ * service
  *
  * @see SaveDigitalDocumentFromUrlJuelFunction#save_digital_document_from_url(String, String) The
  * function itself
@@ -44,34 +45,31 @@ public class SaveDigitalDocumentFromUrlJuelFunction extends
   }
 
   /**
-   * Static JUEL function that removes a variable (to prevent exceptions in case of changing
-   * transient flag of the variable) and sets new value to an execution context
+   * Static JUEL function that sends request for downloading the file from remote location
    *
    * @param remoteFileUrl  URL from which you want to download file
    * @param targetFileName new file name for this file
+   * @return stored file metadata
    */
   public static DocumentMetadata save_digital_document_from_url(String remoteFileUrl,
       String targetFileName) {
-
-    var restClient = getBean(DigitalDocumentServiceInternalApiRestClient.class);
-    var idmService = getBean("system-user-keycloak-client-service", IdmService.class);
-    var accessToken = idmService.getClientAccessToken();
-
-    final var execution = getExecution();
-    final var processInstanceId = execution.getProcessInstanceId();
-
     URL remoteFileLocation;
     try {
       remoteFileLocation = new URL(remoteFileUrl);
     } catch (MalformedURLException e) {
       return DocumentMetadata.builder().build();
     }
+
+    var restClient = getBean(DigitalDocumentServiceInternalApiRestClient.class);
+    var processInstanceId = getExecution().getProcessInstanceId();
     var remoteDocumentDto = RemoteDocumentDto.builder()
         .remoteFileLocation(remoteFileLocation)
         .filename(targetFileName)
         .build();
-    var metadataDto = restClient.upload(processInstanceId, remoteDocumentDto,
-        createHeaders(accessToken));
+    var idmService = getBean("system-user-keycloak-client-service", IdmService.class);
+    var accessToken = idmService.getClientAccessToken();
+    var headers = createHeaders(accessToken);
+    var metadataDto = restClient.upload(processInstanceId, remoteDocumentDto, headers);
 
     return toDocumentMetadata(metadataDto);
   }

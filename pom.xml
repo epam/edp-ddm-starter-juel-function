@@ -45,6 +45,7 @@
     <ddm-message-payload-storage.version>1.8.0.1</ddm-message-payload-storage.version>
     <ddm-starter-trembita-integration.version>1.9.0.4</ddm-starter-trembita-integration.version>
 
+    <apache.tika.version>2.7.0</apache.tika.version>
     <guava.version>29.0-jre</guava.version>
     <camunda.bpm.assert.version>7.0.0</camunda.bpm.assert.version>
     <groovy.version>3.0.6</groovy.version>
@@ -52,16 +53,16 @@
 
   <dependencyManagement>
     <dependencies>
-	    <dependency>
-		    <groupId>org.apache.logging.log4j</groupId>
-		    <artifactId>log4j-api</artifactId>
-		    <version>${log4j.version}</version>
-		  </dependency>
       <dependency>
-		    <groupId>org.apache.logging.log4j</groupId>
-		    <artifactId>log4j-core</artifactId>
-		    <version>${log4j.version}</version>
-		  </dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -117,6 +118,17 @@
       <groupId>org.camunda.spin</groupId>
       <artifactId>camunda-spin-core</artifactId>
       <version>1.9.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-core</artifactId>
+      <version>${apache.tika.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-parsers-standard-package</artifactId>
+      <version>${apache.tika.version}</version>
     </dependency>
 
     <!-- ddm starters -->
