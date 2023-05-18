@@ -14,62 +14,42 @@
  * limitations under the License.
  */
 
-package com.epam.digital.data.platform.el.juel.it;
+package com.epam.digital.data.platform.el.juel.it.digdocument;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.assertThat;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
 import java.io.IOException;
 import java.util.Map;
-import lombok.SneakyThrows;
 import org.camunda.bpm.engine.test.Deployment;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
-class LoadDigitalDocumentJuelFunctionIT extends BaseIT {
-
-  @Autowired
-  @Qualifier("keycloakMockServer")
-  protected WireMockServer keycloak;
-  @Autowired
-  @Qualifier("digitalDocumentServiceMockServer")
-  protected WireMockServer digitalDocumentService;
+class GetDigitalDocumentMetadataJuelFunctionIT extends AbstractDigitalDocumentJuelFunctionIT {
 
   @Test
-  @SneakyThrows
-  @Deployment(resources = "bpmn/load_digital_document.bpmn")
-  void shouldLoadDigitalDocument() {
+  @Deployment(resources = "bpmn/save_digital_document_from_url.bpmn")
+  void shouldReturnCorrectDocumentMetadata() throws IOException {
     mockConnectToKeycloak();
     mockConnectToDocumentService();
 
     var processInstance = runtimeService().startProcessInstanceByKey(
-        "load_digital_document", Map.of());
+        "get_digital_document_metadata", Map.of());
 
     assertThat(processInstance).isEnded();
-  }
-
-  private void mockConnectToKeycloak() throws IOException {
-    keycloak.addStubMapping(
-        stubFor(post(urlPathEqualTo("/auth/realms/test-realm/protocol/openid-connect/token"))
-            .withRequestBody(equalTo("grant_type=client_credentials"))
-            .willReturn(aResponse().withStatus(200)
-                .withHeader("Content-type", "application/json")
-                .withBody(getContentFromFile("/json/keycloakConnectResponse.json")))));
   }
 
   private void mockConnectToDocumentService() {
     digitalDocumentService.addStubMapping(
         stubFor(get(urlPathMatching("/internal-api/documents/.*"))
             .willReturn(aResponse().withStatus(200)
-                .withHeader("Content-type", "image/png")
-                .withBody(new byte[]{1, 2, 3}))));
+                .withHeader("Content-type", "application/json")
+                .withBody("{\"id\": \"11111111-1111-1111-1111-111111111111\",\n"
+                    + "\"name\": \"file.txt\",\n"
+                    + "\"type\": \"text/plain\",\n"
+                    + "\"checksum\": \"1234567890\",\n"
+                    + "\"size\": 3 }"))));
   }
 }
