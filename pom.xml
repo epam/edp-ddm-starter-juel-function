@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2023 EPAM Systems.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -23,13 +38,14 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <ddm-starter-security.version>1.6.0.13</ddm-starter-security.version>
-    <ddm-form-data-storage.version>1.8.0.1</ddm-form-data-storage.version>
+    <ddm-form-data-storage.version>1.8.0.3</ddm-form-data-storage.version>
     <ddm-bpm-data-accessor.version>1.6.0.1</ddm-bpm-data-accessor.version>
     <ddm-idm-client.version>1.6.0.5</ddm-idm-client.version>
-    <ddm-digital-document-client.version>1.9.0.3</ddm-digital-document-client.version>
+    <ddm-digital-document-client.version>1.9.0.5</ddm-digital-document-client.version>
     <ddm-message-payload-storage.version>1.8.0.1</ddm-message-payload-storage.version>
     <ddm-starter-trembita-integration.version>1.9.0.4</ddm-starter-trembita-integration.version>
 
+    <apache.tika.version>2.7.0</apache.tika.version>
     <guava.version>29.0-jre</guava.version>
     <camunda.bpm.assert.version>7.0.0</camunda.bpm.assert.version>
     <groovy.version>3.0.6</groovy.version>
@@ -37,16 +53,16 @@
 
   <dependencyManagement>
     <dependencies>
-	    <dependency>
-		    <groupId>org.apache.logging.log4j</groupId>
-		    <artifactId>log4j-api</artifactId>
-		    <version>${log4j.version}</version>
-		  </dependency>
       <dependency>
-		    <groupId>org.apache.logging.log4j</groupId>
-		    <artifactId>log4j-core</artifactId>
-		    <version>${log4j.version}</version>
-		  </dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -102,6 +118,17 @@
       <groupId>org.camunda.spin</groupId>
       <artifactId>camunda-spin-core</artifactId>
       <version>1.9.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-core</artifactId>
+      <version>${apache.tika.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-parsers-standard-package</artifactId>
+      <version>${apache.tika.version}</version>
     </dependency>
 
     <!-- ddm starters -->

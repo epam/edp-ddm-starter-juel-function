@@ -19,62 +19,44 @@ package com.epam.digital.data.platform.el.juel;
 import static com.epam.digital.data.platform.el.juel.util.Utils.createHeaders;
 
 import com.epam.digital.data.platform.dgtldcmnt.client.DigitalDocumentServiceInternalApiRestClient;
-import com.epam.digital.data.platform.dgtldcmnt.dto.RemoteDocumentDto;
-import com.epam.digital.data.platform.dgtldcmnt.dto.RemoteDocumentMetadataDto;
+import com.epam.digital.data.platform.dgtldcmnt.dto.InternalApiDocumentMetadataDto;
 import com.epam.digital.data.platform.el.juel.dto.DocumentMetadata;
 import com.epam.digital.data.platform.integration.idm.service.IdmService;
-import java.net.MalformedURLException;
-import java.net.URL;
 import org.springframework.stereotype.Component;
 
 /**
- * Class with JUEL function that used for saving files from remote storage in digital-document
- * service
+ * Class with JUEL function that used for get document metadata from digital-document service
  *
- * @see SaveDigitalDocumentFromUrlJuelFunction#save_digital_document_from_url(String, String) The
- * function itself
+ * @see GetDigitalDocumentMetadataJuelFunction#get_digital_document_metadata(String)  The function itself
  */
 @Component
-public class SaveDigitalDocumentFromUrlJuelFunction extends
+public class GetDigitalDocumentMetadataJuelFunction extends
     AbstractApplicationContextAwareJuelFunction {
 
-  private static final String JUEL_FUNCTION_NAME = "save_digital_document_from_url";
+  private static final String JUEL_FUNCTION_NAME = "get_digital_document_metadata";
 
-  protected SaveDigitalDocumentFromUrlJuelFunction() {
-    super(JUEL_FUNCTION_NAME, String.class, String.class);
+  protected GetDigitalDocumentMetadataJuelFunction() {
+    super(JUEL_FUNCTION_NAME, String.class);
   }
 
   /**
-   * Static JUEL function that sends request for downloading the file from remote location
+   * Static JUEL function that sends request for getting digital document metadata
    *
-   * @param remoteFileUrl  URL from which you want to download file
-   * @param targetFileName new file name for this file
+   * @param documentId        id of digital document
    * @return stored file metadata
    */
-  public static DocumentMetadata save_digital_document_from_url(String remoteFileUrl,
-      String targetFileName) {
-    URL remoteFileLocation;
-    try {
-      remoteFileLocation = new URL(remoteFileUrl);
-    } catch (MalformedURLException e) {
-      return DocumentMetadata.builder().build();
-    }
-
+  public static DocumentMetadata get_digital_document_metadata(String documentId) {
     var restClient = getBean(DigitalDocumentServiceInternalApiRestClient.class);
     var processInstanceId = getExecution().getProcessInstanceId();
-    var remoteDocumentDto = RemoteDocumentDto.builder()
-        .remoteFileLocation(remoteFileLocation)
-        .filename(targetFileName)
-        .build();
     var idmService = getBean("system-user-keycloak-client-service", IdmService.class);
     var accessToken = idmService.getClientAccessToken();
     var headers = createHeaders(accessToken);
-    var metadataDto = restClient.upload(processInstanceId, remoteDocumentDto, headers);
+    var metadataDto = restClient.getMetadata(processInstanceId, documentId, headers);
 
     return toDocumentMetadata(metadataDto);
   }
 
-  private static DocumentMetadata toDocumentMetadata(RemoteDocumentMetadataDto metadataDto) {
+  private static DocumentMetadata toDocumentMetadata(InternalApiDocumentMetadataDto metadataDto) {
     return DocumentMetadata.builder()
         .id(metadataDto.getId())
         .name(metadataDto.getName())

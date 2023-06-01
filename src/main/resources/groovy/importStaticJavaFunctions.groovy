@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 EPAM Systems.
+ * Copyright 2023 EPAM Systems.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,4 +29,7 @@ set_transient_variable = com.epam.digital.data.platform.el.juel.SetTransientVari
 message_payload = com.epam.digital.data.platform.el.juel.MessagePayloadJuelFunction.&message_payload
 process_caller = com.epam.digital.data.platform.el.juel.ProcessCallerJuelFunction.&process_caller
 save_digital_document_from_url = com.epam.digital.data.platform.el.juel.SaveDigitalDocumentFromUrlJuelFunction.&save_digital_document_from_url
+save_digital_document = com.epam.digital.data.platform.el.juel.SaveDigitalDocumentJuelFunction.&save_digital_document
 get_trembita_auth_token = com.epam.digital.data.platform.el.juel.GetTrembitaAuthTokenJuelFunction.&get_trembita_auth_token
+load_digital_document = com.epam.digital.data.platform.el.juel.LoadDigitalDocumentJuelFunction.&load_digital_document
+get_digital_document_metadata = com.epam.digital.data.platform.el.juel.GetDigitalDocumentMetadataJuelFunction.&get_digital_document_metadata
