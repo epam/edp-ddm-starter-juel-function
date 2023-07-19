@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_10uiuwl" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.10.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.19.0">
+  <bpmn:collaboration id="Collaboration_0ochmzq">
+    <bpmn:participant id="Participant_0egu7hr" name="Root process" processRef="root_process_with_file_saving" />
+    <bpmn:participant id="Participant_0lspw2f" name="subprocess1" processRef="subprocess1" />
+    <bpmn:participant id="Participant_08047c8" name="subprocess2" processRef="subprocess2" />
+  </bpmn:collaboration>
+  <bpmn:process id="root_process_with_file_saving" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" camunda:initiator="initiator">
+      <bpmn:outgoing>Flow_0hjtcr0</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0hjtcr0" sourceRef="StartEvent_1" targetRef="Activity_1xjj5i5" />
+    <bpmn:endEvent id="Event_015sniy">
+      <bpmn:incoming>Flow_0cilkls</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0cilkls" sourceRef="Activity_1xjj5i5" targetRef="Event_015sniy" />
+    <bpmn:callActivity id="Activity_1xjj5i5" name="Call subprocess 1" camunda:modelerTemplate="callActivity" calledElement="subprocess1">
+      <bpmn:extensionElements>
+        <camunda:in sourceExpression="${&#34;&#34;}" target="inputPayload" />
+        <camunda:out source="outputPayload" target="output" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0hjtcr0</bpmn:incoming>
+      <bpmn:outgoing>Flow_0cilkls</bpmn:outgoing>
+    </bpmn:callActivity>
+  </bpmn:process>
+  <bpmn:process id="subprocess1" name="subprocess1" isExecutable="true">
+    <bpmn:startEvent id="Event_0nlwdeu" camunda:initiator="initiator">
+      <bpmn:outgoing>Flow_01b3j61</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_01b3j61" sourceRef="Event_0nlwdeu" targetRef="Activity_0z6d1zi" />
+    <bpmn:endEvent id="Event_03a6i8y">
+      <bpmn:incoming>Flow_1m1o2zt</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1m1o2zt" sourceRef="Activity_0z6d1zi" targetRef="Event_03a6i8y" />
+    <bpmn:callActivity id="Activity_0z6d1zi" name="Call subprocess 2" camunda:modelerTemplate="callActivity" calledElement="subprocess2">
+      <bpmn:extensionElements>
+        <camunda:in sourceExpression="${&#34;&#34;}" target="inputPayload" />
+        <camunda:out source="outputPayload" target="output" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_01b3j61</bpmn:incoming>
+      <bpmn:outgoing>Flow_1m1o2zt</bpmn:outgoing>
+    </bpmn:callActivity>
+  </bpmn:process>
+  <bpmn:process id="subprocess2" name="subprocess2" isExecutable="true">
+    <bpmn:startEvent id="Event_09vcv8m" camunda:initiator="initiator">
+      <bpmn:outgoing>Flow_0zaclhd</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0zaclhd" sourceRef="Event_09vcv8m" targetRef="Activity_0ucvf8o" />
+    <bpmn:endEvent id="Event_0tkstpv">
+      <bpmn:incoming>Flow_1ssvigi</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1ssvigi" sourceRef="Activity_0ucvf8o" targetRef="Event_0tkstpv" />
+    <bpmn:scriptTask id="Activity_0ucvf8o" name="Save document for root process" scriptFormat="groovy">
+      <bpmn:incoming>Flow_0zaclhd</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ssvigi</bpmn:outgoing>
+      <bpmn:script>var documentMetadata = save_digital_document(new byte[]{1, 2, 3},'file.txt')
+
+        assert documentMetadata.id.equals('11111111-1111-1111-1111-111111111111')
+        assert documentMetadata.name.equals('file.txt')
+        assert documentMetadata.type.equals('text/plain')
+        assert documentMetadata.checksum.equals('1234567890')
+        assert documentMetadata.size == 3
+      </bpmn:script>
+    </bpmn:scriptTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0ochmzq">
+      <bpmndi:BPMNShape id="Participant_0egu7hr_di" bpmnElement="Participant_0egu7hr" isHorizontal="true">
+        <dc:Bounds x="120" y="52" width="370" height="250" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="159" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_015sniy_di" bpmnElement="Event_015sniy">
+        <dc:Bounds x="432" y="159" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1h4icbm_di" bpmnElement="Activity_1xjj5i5">
+        <dc:Bounds x="270" y="137" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0hjtcr0_di" bpmnElement="Flow_0hjtcr0">
+        <di:waypoint x="215" y="177" />
+        <di:waypoint x="270" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0cilkls_di" bpmnElement="Flow_0cilkls">
+        <di:waypoint x="370" y="177" />
+        <di:waypoint x="432" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_0lspw2f_di" bpmnElement="Participant_0lspw2f" isHorizontal="true">
+        <dc:Bounds x="120" y="310" width="370" height="250" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0nlwdeu_di" bpmnElement="Event_0nlwdeu">
+        <dc:Bounds x="172" y="422" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_03a6i8y_di" bpmnElement="Event_03a6i8y">
+        <dc:Bounds x="412" y="422" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0f4s9km_di" bpmnElement="Activity_0z6d1zi">
+        <dc:Bounds x="260" y="400" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_01b3j61_di" bpmnElement="Flow_01b3j61">
+        <di:waypoint x="208" y="440" />
+        <di:waypoint x="260" y="440" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1m1o2zt_di" bpmnElement="Flow_1m1o2zt">
+        <di:waypoint x="360" y="440" />
+        <di:waypoint x="412" y="440" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_08047c8_di" bpmnElement="Participant_08047c8" isHorizontal="true">
+        <dc:Bounds x="120" y="580" width="370" height="250" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_09vcv8m_di" bpmnElement="Event_09vcv8m">
+        <dc:Bounds x="192" y="692" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0tkstpv_di" bpmnElement="Event_0tkstpv">
+        <dc:Bounds x="432" y="692" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0qm6xrg_di" bpmnElement="Activity_0ucvf8o">
+        <dc:Bounds x="280" y="670" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0zaclhd_di" bpmnElement="Flow_0zaclhd">
+        <di:waypoint x="228" y="710" />
+        <di:waypoint x="280" y="710" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ssvigi_di" bpmnElement="Flow_1ssvigi">
+        <di:waypoint x="380" y="710" />
+        <di:waypoint x="432" y="710" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -59,12 +59,12 @@ public class SaveDigitalDocumentJuelFunction extends AbstractApplicationContextA
     }
 
     var restClient = getBean(DigitalDocumentServiceInternalApiV2RestClient.class);
-    var processInstanceId = getExecution().getProcessInstanceId();
+    var rootProcessInstanceId = getExecution().getRootProcessInstanceId();
     var multipartFile = toMultipartFile(content, targetFileName);
     var idmService = getBean("system-user-keycloak-client-service", IdmService.class);
     var accessToken = idmService.getClientAccessToken();
     var headers = createHeaders(accessToken);
-    var metadataDto = restClient.upload(processInstanceId, targetFileName, multipartFile, headers);
+    var metadataDto = restClient.upload(rootProcessInstanceId, targetFileName, multipartFile, headers);
 
     return toDocumentMetadata(metadataDto);
   }

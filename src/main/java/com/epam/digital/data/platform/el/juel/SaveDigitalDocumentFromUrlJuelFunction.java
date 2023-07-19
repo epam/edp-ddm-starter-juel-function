@@ -61,7 +61,7 @@ public class SaveDigitalDocumentFromUrlJuelFunction extends
     }
 
     var restClient = getBean(DigitalDocumentServiceInternalApiRestClient.class);
-    var processInstanceId = getExecution().getProcessInstanceId();
+    var rootProcessInstanceId = getExecution().getRootProcessInstanceId();
     var remoteDocumentDto = RemoteDocumentDto.builder()
         .remoteFileLocation(remoteFileLocation)
         .filename(targetFileName)
@@ -69,7 +69,7 @@ public class SaveDigitalDocumentFromUrlJuelFunction extends
     var idmService = getBean("system-user-keycloak-client-service", IdmService.class);
     var accessToken = idmService.getClientAccessToken();
     var headers = createHeaders(accessToken);
-    var metadataDto = restClient.upload(processInstanceId, remoteDocumentDto, headers);
+    var metadataDto = restClient.upload(rootProcessInstanceId, remoteDocumentDto, headers);
 
     return toDocumentMetadata(metadataDto);
   }

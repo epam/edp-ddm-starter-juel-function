@@ -53,9 +53,9 @@ public class LoadDigitalDocumentJuelFunction extends
     var accessToken = idmService.getClientAccessToken();
 
     final var execution = getExecution();
-    final var processInstanceId = execution.getProcessInstanceId();
+    final var rootProcessInstanceId = execution.getRootProcessInstanceId();
 
-    var response = restClient.download(processInstanceId, documentId,
+    var response = restClient.download(rootProcessInstanceId, documentId,
         createHeaders(accessToken));
 
     return toByteArray(response);

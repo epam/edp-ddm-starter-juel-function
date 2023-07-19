@@ -23,7 +23,6 @@ import static org.mockito.ArgumentMatchers.refEq;
 import com.epam.digital.data.platform.dgtldcmnt.client.DigitalDocumentServiceInternalApiV2RestClient;
 import com.epam.digital.data.platform.dgtldcmnt.dto.InternalApiDocumentMetadataDto;
 import com.epam.digital.data.platform.dgtldcmnt.multipart.ByteArrayMultipartFile;
-import com.epam.digital.data.platform.el.juel.SaveDigitalDocumentJuelFunction;
 import com.epam.digital.data.platform.integration.idm.service.IdmService;
 import java.util.List;
 import org.apache.tika.Tika;
@@ -45,7 +44,7 @@ import org.springframework.http.HttpHeaders;
 @ExtendWith(MockitoExtension.class)
 public class SaveDigitalDocumentJuelFunctionTest {
 
-  static final String PROCESS_INSTANCE_ID = "processInstanceId";
+  static final String ROOT_PROCESS_INSTANCE_ID = "processInstanceId";
 
   @Mock
   DigitalDocumentServiceInternalApiV2RestClient client;
@@ -73,7 +72,8 @@ public class SaveDigitalDocumentJuelFunctionTest {
     Mockito.lenient().doReturn(idmService)
         .when(applicationContext).getBean("system-user-keycloak-client-service", IdmService.class);
     Mockito.lenient().doReturn(tika).when(applicationContext).getBean(Tika.class);
-    Mockito.lenient().doReturn(PROCESS_INSTANCE_ID).when(executionEntity).getProcessInstanceId();
+    Mockito.lenient().doReturn(ROOT_PROCESS_INSTANCE_ID).when(executionEntity)
+        .getRootProcessInstanceId();
   }
 
   @Test
@@ -128,7 +128,8 @@ public class SaveDigitalDocumentJuelFunctionTest {
         .name(targetFileName)
         .build();
     Mockito.doReturn(metadataDto).when(client)
-        .upload(eq(PROCESS_INSTANCE_ID), eq(targetFileName), refEq(expectedMultipartFile), any());
+        .upload(eq(ROOT_PROCESS_INSTANCE_ID), eq(targetFileName), refEq(expectedMultipartFile),
+            any());
 
     final var actualDocumentDto = SaveDigitalDocumentJuelFunction.save_digital_document(content,
         targetFileName);
@@ -142,7 +143,7 @@ public class SaveDigitalDocumentJuelFunctionTest {
 
     Mockito.verify(tika).detect(content, targetFileName);
     Mockito.verify(client)
-        .upload(eq(PROCESS_INSTANCE_ID), eq(targetFileName), refEq(expectedMultipartFile),
+        .upload(eq(ROOT_PROCESS_INSTANCE_ID), eq(targetFileName), refEq(expectedMultipartFile),
             httpHeadersArgumentCaptor.capture());
     var actualHeaders = httpHeadersArgumentCaptor.getValue();
     Assertions.assertThat(actualHeaders)

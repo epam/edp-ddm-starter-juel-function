@@ -41,7 +41,7 @@ import org.springframework.http.HttpHeaders;
 @ExtendWith(MockitoExtension.class)
 class GetDigitalDocumentMetadataJuelFunctionTest {
 
-  static final String PROCESS_INSTANCE_ID = "processInstanceId";
+  static final String ROOT_PROCESS_INSTANCE_ID = "processInstanceId";
 
   @Mock
   DigitalDocumentServiceInternalApiRestClient client;
@@ -66,7 +66,8 @@ class GetDigitalDocumentMetadataJuelFunctionTest {
         .when(applicationContext).getBean(DigitalDocumentServiceInternalApiRestClient.class);
     Mockito.lenient().doReturn(idmService)
         .when(applicationContext).getBean("system-user-keycloak-client-service", IdmService.class);
-    Mockito.lenient().doReturn(PROCESS_INSTANCE_ID).when(executionEntity).getProcessInstanceId();
+    Mockito.lenient().doReturn(ROOT_PROCESS_INSTANCE_ID).when(executionEntity)
+        .getRootProcessInstanceId();
   }
 
   @Test
@@ -85,7 +86,7 @@ class GetDigitalDocumentMetadataJuelFunctionTest {
         .name(targetFileName)
         .build();
     Mockito.doReturn(metadataDto).when(client)
-        .getMetadata(eq(PROCESS_INSTANCE_ID), eq(documentId), any());
+        .getMetadata(eq(ROOT_PROCESS_INSTANCE_ID), eq(documentId), any());
 
     final var actualDocumentDto = GetDigitalDocumentMetadataJuelFunction.get_digital_document_metadata(
         documentId);
@@ -98,7 +99,8 @@ class GetDigitalDocumentMetadataJuelFunctionTest {
         .hasFieldOrPropertyWithValue("size", 1L);
 
     Mockito.verify(client)
-        .getMetadata(eq(PROCESS_INSTANCE_ID), eq(documentId), httpHeadersArgumentCaptor.capture());
+        .getMetadata(eq(ROOT_PROCESS_INSTANCE_ID), eq(documentId),
+            httpHeadersArgumentCaptor.capture());
     var actualHeaders = httpHeadersArgumentCaptor.getValue();
     Assertions.assertThat(actualHeaders)
         .containsEntry("X-Access-Token", List.of("accessToken"));

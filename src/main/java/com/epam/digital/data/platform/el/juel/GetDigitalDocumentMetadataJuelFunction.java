@@ -47,11 +47,11 @@ public class GetDigitalDocumentMetadataJuelFunction extends
    */
   public static DocumentMetadata get_digital_document_metadata(String documentId) {
     var restClient = getBean(DigitalDocumentServiceInternalApiRestClient.class);
-    var processInstanceId = getExecution().getProcessInstanceId();
+    var rootProcessInstanceId = getExecution().getRootProcessInstanceId();
     var idmService = getBean("system-user-keycloak-client-service", IdmService.class);
     var accessToken = idmService.getClientAccessToken();
     var headers = createHeaders(accessToken);
-    var metadataDto = restClient.getMetadata(processInstanceId, documentId, headers);
+    var metadataDto = restClient.getMetadata(rootProcessInstanceId, documentId, headers);
 
     return toDocumentMetadata(metadataDto);
   }

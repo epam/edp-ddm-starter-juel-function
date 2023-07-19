@@ -20,8 +20,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aMultipart;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.binaryEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.assertThat;
 
@@ -40,6 +44,27 @@ class SaveDigitalDocumentJuelFunctionIT extends AbstractDigitalDocumentJuelFunct
     var processInstance = runtimeService().startProcessInstanceByKey("save_digital_document");
 
     assertThat(processInstance).isEnded();
+  }
+
+  @Test
+  @Deployment(resources = "bpmn/save_digital_document_for_root_process.bpmn")
+  void shouldReturnCorrectDocumentMetadataForRootProcess() throws IOException {
+    mockConnectToKeycloak();
+    mockConnectToDocumentService();
+
+    var processInstance = runtimeService().startProcessInstanceByKey(
+        "root_process_with_file_saving");
+
+    assertThat(processInstance).isEnded();
+
+    var rootProcessInstanceId = processInstance.getId();
+
+    digitalDocumentService.verify(
+        postRequestedFor(urlPathEqualTo("/internal-api/v2/documents/" + rootProcessInstanceId))
+            .withQueryParam("filename", equalTo("file.txt"))
+            .withRequestBodyPart(aMultipart("file.txt")
+                .withHeader("Content-Type", equalTo("text/plain"))
+                .withBody(binaryEqualTo(new byte[]{1, 2, 3})).build()));
   }
 
   private void mockConnectToDocumentService() {
