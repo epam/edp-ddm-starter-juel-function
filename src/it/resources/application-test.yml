@@ -15,6 +15,9 @@ keycloak:
 digital-document-service:
   url: http://localhost:8201
 
+dso:
+  url: http://localhost:8202
+
 trembita:
   registries:
     some-registry:

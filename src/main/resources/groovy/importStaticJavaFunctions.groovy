@@ -33,3 +33,5 @@ save_digital_document = com.epam.digital.data.platform.el.juel.SaveDigitalDocume
 get_trembita_auth_token = com.epam.digital.data.platform.el.juel.GetTrembitaAuthTokenJuelFunction.&get_trembita_auth_token
 load_digital_document = com.epam.digital.data.platform.el.juel.LoadDigitalDocumentJuelFunction.&load_digital_document
 get_digital_document_metadata = com.epam.digital.data.platform.el.juel.GetDigitalDocumentMetadataJuelFunction.&get_digital_document_metadata
+signature_content = com.epam.digital.data.platform.el.juel.SignatureContentJuelFunction.&signature_content
+signature_details = com.epam.digital.data.platform.el.juel.SignatureDetailsJuelFunction.&signature_details
