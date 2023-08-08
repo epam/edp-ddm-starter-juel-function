@@ -20,8 +20,12 @@ import static com.epam.digital.data.platform.el.juel.util.Utils.createHeaders;
 
 import com.epam.digital.data.platform.dso.api.dto.SignFormat;
 import com.epam.digital.data.platform.dso.api.dto.SignInfoRequestDto;
+import com.epam.digital.data.platform.dso.client.exception.InternalServerErrorException;
+import com.epam.digital.data.platform.dso.client.exception.InvalidSignatureException;
+import com.epam.digital.data.platform.el.juel.exception.SignatureProcessingException;
 import com.epam.digital.data.platform.integration.idm.service.IdmService;
 import java.util.function.BiFunction;
+import org.camunda.bpm.engine.delegate.BpmnError;
 import org.springframework.http.HttpHeaders;
 
 public abstract class AbstractSignatureJuelFunction extends
@@ -34,7 +38,7 @@ public abstract class AbstractSignatureJuelFunction extends
     super(juelFunctionName, paramTypes);
   }
 
-  protected static <T> T sendRequest(String data, SignFormat container,
+  protected static <T> T sendRequest(String data, SignFormat container, String bpmnErrorCode,
       BiFunction<SignInfoRequestDto, HttpHeaders, T> dsoOperation) {
     var idmService = getBean("system-user-keycloak-client-service", IdmService.class);
     var accessToken = idmService.getClientAccessToken();
@@ -43,6 +47,14 @@ public abstract class AbstractSignatureJuelFunction extends
         .container(container)
         .build();
     var headers = createHeaders(accessToken);
-    return dsoOperation.apply(signInfoRequestDto, headers);
+    try {
+      return dsoOperation.apply(signInfoRequestDto, headers);
+    } catch (InvalidSignatureException e) {
+      throw new BpmnError(bpmnErrorCode, e.getErrorDto().getLocalizedMessage());
+    } catch (InternalServerErrorException ex) {
+      throw new SignatureProcessingException(ex.getErrorDto().getMessage());
+    } catch (Exception exception) {
+      throw new SignatureProcessingException(exception.getMessage());
+    }
   }
 }

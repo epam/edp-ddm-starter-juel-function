@@ -21,8 +21,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import org.camunda.bpm.engine.ScriptEvaluationException;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests;
 import org.junit.jupiter.api.Test;
@@ -45,5 +49,40 @@ public class SignatureDetailsJuelFunctionIT extends AbstractSignatureJuelFunctio
     var processInstance = runtimeService().startProcessInstanceByKey("signature_details");
 
     BpmnAwareTests.assertThat(processInstance).isEnded();
+  }
+
+  @Test
+  @Deployment(resources = "bpmn/signature_details.bpmn")
+  void shouldProcessBusinessErrorWhenGettingDetailsFromSignature() throws IOException {
+    mockConnectToKeycloak();
+    digitalSignatureService.addStubMapping(
+        stubFor(post(urlPathMatching("/api/esignature/info"))
+            .withRequestBody(equalTo("{\"data\":\"dGVzdERhdGE=\",\"container\":\"CADES\"}"))
+            .willReturn(aResponse().withStatus(412)
+                .withHeader("Content-type", "application/json")
+                .withBody(
+                    "{\"code\":\"ERROR_BAD_SIGNATURE\",\"localizedMessage\":\"Вибачте, підпис не пройшов валідацію. Будь ласка, спробуйте ще раз\"}"))));
+
+    var processInstance = runtimeService().startProcessInstanceByKey("signature_details_error");
+
+    BpmnAwareTests.assertThat(processInstance).isEnded();
+  }
+
+  @Test
+  @Deployment(resources = "bpmn/signature_details.bpmn")
+  void shouldProcessTechnicalErrorWhenGettingDetailsFromSignature() throws IOException {
+    mockConnectToKeycloak();
+    digitalSignatureService.addStubMapping(
+        stubFor(post(urlPathMatching("/api/esignature/info"))
+            .withRequestBody(equalTo("{\"data\":\"dGVzdERhdGE=\",\"container\":\"CADES\"}"))
+            .willReturn(aResponse().withStatus(500)
+                .withHeader("Content-type", "application/json")
+                .withBody(
+                    "{\"code\":\"ERROR_UNKNOWN\",\"message\":\"Something went wrong\"}"))));
+
+    var exception = assertThrows(ScriptEvaluationException.class,
+        () -> runtimeService().startProcessInstanceByKey("signature_details_error"));
+    assertThat(exception.getMessage(),
+        matchesPattern(".*SignatureProcessingException: Something went wrong"));
   }
 }

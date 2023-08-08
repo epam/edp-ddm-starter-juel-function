@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 public class SignatureDetailsJuelFunction extends AbstractSignatureJuelFunction {
 
   private static final String SIGNATURE_DETAILS_FUNCTION_NAME = "signature_details";
+  private static final String SIGNATURE_UNABLE_GET_DETAILS = "SIGNATURE_UNABLE_GET_DETAILS";
 
   public SignatureDetailsJuelFunction() {
     super(SIGNATURE_DETAILS_FUNCTION_NAME, String.class, SignFormat.class);
@@ -44,7 +45,7 @@ public class SignatureDetailsJuelFunction extends AbstractSignatureJuelFunction 
    */
   public static SignatureInfoDto signature_details(String data, SignFormat container) {
     var restClient = getBean(DigitalSignatureRestClient.class);
-    var result = sendRequest(data, container, restClient::info);
+    var result = sendRequest(data, container, SIGNATURE_UNABLE_GET_DETAILS, restClient::info);
     var allSignInfo = result.getInfo();
     var lastSigner = allSignInfo.isEmpty() ? null : allSignInfo.get(allSignInfo.size() - 1);
     return SignatureInfoDto.builder()

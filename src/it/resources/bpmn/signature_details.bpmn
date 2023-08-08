@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0uhifcb" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0uhifcb" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
   <bpmn:collaboration id="Collaboration_022f8o1">
     <bpmn:participant id="Participant_1wjzxeb" name="Signature details" processRef="signature_details" />
+    <bpmn:participant id="Participant_1eime95" name="Signature details (error)" processRef="signature_details_error" />
   </bpmn:collaboration>
   <bpmn:process id="signature_details" name="Signature details" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1" name="Start">
@@ -26,6 +27,48 @@
         assert result.getAllSignInfo().get(0).subjDRFOCode == '1111111111'</bpmn:script>
     </bpmn:scriptTask>
   </bpmn:process>
+  <bpmn:process id="signature_details_error" name="Signature details (error)" isExecutable="true">
+    <bpmn:startEvent id="Event_1lbq3b1" name="Start">
+      <bpmn:outgoing>Flow_1noaagk</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:scriptTask id="Activity_1eempnt" name="Script" scriptFormat="groovy">
+      <bpmn:incoming>Flow_1noaagk</bpmn:incoming>
+      <bpmn:outgoing>Flow_0mec5jj</bpmn:outgoing>
+      <bpmn:script>import com.epam.digital.data.platform.dso.api.dto.SignFormat
+
+        def result = signature_details('dGVzdERhdGE=', SignFormat.CADES)</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="Event_11k1uj3">
+      <bpmn:incoming>Flow_1tu94ne</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:scriptTask id="Activity_0tnslpb" name="Assert" scriptFormat="groovy">
+      <bpmn:incoming>Flow_1839ib9</bpmn:incoming>
+      <bpmn:outgoing>Flow_1tu94ne</bpmn:outgoing>
+      <bpmn:script>assert errorCodeVar == 'SIGNATURE_UNABLE_GET_DETAILS'
+        assert errorMessageVar == 'Вибачте, підпис не пройшов валідацію. Будь ласка, спробуйте ще раз'</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:boundaryEvent id="Event_0pxu3r9" attachedToRef="Activity_1eempnt">
+      <bpmn:outgoing>Flow_1839ib9</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_0to46dx" errorRef="Error_1g2ay0v" camunda:errorCodeVariable="errorCodeVar" camunda:errorMessageVariable="errorMessageVar" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_1tu94ne" sourceRef="Activity_0tnslpb" targetRef="Event_11k1uj3" />
+    <bpmn:sequenceFlow id="Flow_1839ib9" sourceRef="Event_0pxu3r9" targetRef="Activity_0tnslpb" />
+    <bpmn:sequenceFlow id="Flow_1noaagk" sourceRef="Event_1lbq3b1" targetRef="Activity_1eempnt" />
+    <bpmn:sequenceFlow id="Flow_0mec5jj" sourceRef="Activity_1eempnt" targetRef="Activity_0chkymp" />
+    <bpmn:endEvent id="Event_0dojtim" name="End">
+      <bpmn:incoming>Flow_1ivnmmk</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1ivnmmk" sourceRef="Activity_0chkymp" targetRef="Event_0dojtim" />
+    <bpmn:userTask id="Activity_0chkymp" name="UT">
+      <bpmn:incoming>Flow_0mec5jj</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ivnmmk</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:textAnnotation id="TextAnnotation_1lv4j1o">
+      <bpmn:text>Needed to demonstrate that the process will be completed through the error flow.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_11gh5qv" sourceRef="Activity_0chkymp" targetRef="TextAnnotation_1lv4j1o" />
+  </bpmn:process>
+  <bpmn:error id="Error_1g2ay0v" name="Test error" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_022f8o1">
       <bpmndi:BPMNShape id="Participant_1wjzxeb_di" bpmnElement="Participant_1wjzxeb" isHorizontal="true">
@@ -55,6 +98,68 @@
       <bpmndi:BPMNShape id="Activity_0mql208_di" bpmnElement="Activity_1et4ezt">
         <dc:Bounds x="270" y="137" width="100" height="80" />
         <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_10bl1rc" bpmnElement="Participant_1eime95" isHorizontal="true">
+        <dc:Bounds x="120" y="290" width="490" height="290" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1lv4j1o_di" bpmnElement="TextAnnotation_1lv4j1o">
+        <dc:Bounds x="400" y="430" width="190" height="53" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_0f2v3na" bpmnElement="Flow_0mec5jj">
+        <di:waypoint x="370" y="377" />
+        <di:waypoint x="400" y="377" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_1gahtsz" bpmnElement="Flow_1noaagk">
+        <di:waypoint x="215" y="377" />
+        <di:waypoint x="270" y="377" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1839ib9_di" bpmnElement="Flow_1839ib9">
+        <di:waypoint x="320" y="435" />
+        <di:waypoint x="320" y="480" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1tu94ne_di" bpmnElement="Flow_1tu94ne">
+        <di:waypoint x="370" y="520" />
+        <di:waypoint x="432" y="520" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ivnmmk_di" bpmnElement="Flow_1ivnmmk">
+        <di:waypoint x="500" y="377" />
+        <di:waypoint x="532" y="377" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BPMNShape_05ori9p" bpmnElement="Event_1lbq3b1">
+        <dc:Bounds x="179" y="359" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="185" y="402" width="25" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_17lcg8j" bpmnElement="Activity_1eempnt">
+        <dc:Bounds x="270" y="337" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_11k1uj3_di" bpmnElement="Event_11k1uj3">
+        <dc:Bounds x="432" y="502" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0143wkz_di" bpmnElement="Activity_0tnslpb">
+        <dc:Bounds x="270" y="480" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0dl2v69" bpmnElement="Event_0dojtim">
+        <dc:Bounds x="532" y="359" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="540" y="402" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1atn5ku_di" bpmnElement="Activity_0chkymp">
+        <dc:Bounds x="400" y="337" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_11gh5qv_di" bpmnElement="Association_11gh5qv">
+        <di:waypoint x="450" y="417" />
+        <di:waypoint x="450" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0wj9i4d_di" bpmnElement="Event_0pxu3r9">
+        <dc:Bounds x="302" y="399" width="36" height="36" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

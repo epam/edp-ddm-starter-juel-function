@@ -21,8 +21,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import org.camunda.bpm.engine.ScriptEvaluationException;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests;
 import org.junit.jupiter.api.Test;
@@ -45,5 +49,39 @@ public class SignatureContentJuelFunctionIT extends AbstractSignatureJuelFunctio
     var processInstance = runtimeService().startProcessInstanceByKey("signature_content");
 
     BpmnAwareTests.assertThat(processInstance).isEnded();
+  }
+
+  @Test
+  @Deployment(resources = "bpmn/signature_content.bpmn")
+  void shouldProcessBusinessErrorWhenGettingContentFromSignature() throws IOException {
+    mockConnectToKeycloak();
+    digitalSignatureService.addStubMapping(
+        stubFor(post(urlPathMatching("/api/esignature/content"))
+            .withRequestBody(equalTo("{\"data\":\"dGVzdERhdGE=\",\"container\":\"CADES\"}"))
+            .willReturn(aResponse().withStatus(412)
+                .withHeader("Content-type", "application/json")
+                .withBody(
+                    "{\"code\":\"ERROR_PKI_FORMATS_FAILED\",\"localizedMessage\":\"Виникла помилка при розборі чи формуванні даних (пошкоджені дані чи невірний формат)\"}"))));
+
+    var processInstance = runtimeService().startProcessInstanceByKey("signature_content_error");
+
+    BpmnAwareTests.assertThat(processInstance).isEnded();
+  }
+
+  @Test
+  @Deployment(resources = "bpmn/signature_content.bpmn")
+  void shouldProcessRuntimeErrorWhenGettingContentFromSignature() throws IOException {
+    mockConnectToKeycloak();
+    digitalSignatureService.addStubMapping(
+        stubFor(post(urlPathMatching("/api/esignature/content"))
+            .withRequestBody(equalTo("{\"data\":\"dGVzdERhdGE=\",\"container\":\"CADES\"}"))
+            .willReturn(aResponse().withStatus(502)
+                .withHeader("Content-type", "application/json")
+                .withBody("{\"message\":\"Bad Gateway\"}"))));
+
+    var exception = assertThrows(ScriptEvaluationException.class,
+        () -> runtimeService().startProcessInstanceByKey("signature_content_error"));
+    assertThat(exception.getMessage(),
+        matchesPattern(".*SignatureProcessingException: \\[502 Bad Gateway] .*"));
   }
 }
