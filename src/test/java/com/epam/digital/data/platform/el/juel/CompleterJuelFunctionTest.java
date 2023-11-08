@@ -51,7 +51,7 @@ class CompleterJuelFunctionTest {
   @Mock
   private TokenParser parser;
   @Mock
-  private FormDataStorageService formDataStorageService;
+  private FormDataStorageService<?> formDataStorageService;
   @Mock
   private JwtClaimsDto jwtClaimsDto;
   @Mock

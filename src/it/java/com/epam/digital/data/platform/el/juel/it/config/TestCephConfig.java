@@ -16,7 +16,9 @@
 
 package com.epam.digital.data.platform.el.juel.it.config;
 
+import com.epam.digital.data.platform.storage.form.model.CephKeysSearchParams;
 import com.epam.digital.data.platform.storage.form.repository.FormDataRepository;
+import com.epam.digital.data.platform.storage.form.service.CephFormDataStorageService;
 import com.epam.digital.data.platform.storage.form.service.FormDataKeyProviderImpl;
 import com.epam.digital.data.platform.storage.form.service.FormDataStorageService;
 import com.epam.digital.data.platform.storage.message.repository.MessagePayloadRepository;
@@ -29,13 +31,13 @@ import org.springframework.context.annotation.Configuration;
 public class TestCephConfig {
 
   @Bean
-  public FormDataRepository formDataRepository() {
+  public FormDataRepository<?> formDataRepository() {
     return new TestCephFormDataRepository();
   }
 
   @Bean
-  public FormDataStorageService formDataStorageService(FormDataRepository formDataRepository) {
-    return FormDataStorageService.builder()
+  public FormDataStorageService<?> formDataStorageService(FormDataRepository<CephKeysSearchParams> formDataRepository) {
+    return CephFormDataStorageService.builder()
         .keyProvider(new FormDataKeyProviderImpl())
         .repository(formDataRepository)
         .build();

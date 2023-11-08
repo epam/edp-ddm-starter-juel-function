@@ -36,7 +36,7 @@ public abstract class AbstractSubmissionJuelFunction extends
   protected static Optional<FormDataDto> getFormDataFromStorage(String bpmnElementId,
       ExecutionEntity execution) {
     var startEventId = execution.getProcessDefinition().getInitial().getId();
-    var storageService = getBean(FormDataStorageService.class);
+    FormDataStorageService<?> storageService = getBean(FormDataStorageService.class);
     if (bpmnElementId.equals(startEventId)) {
       return storageService.getFormData(getStartFormStorageKey());
     } else {
@@ -47,7 +47,7 @@ public abstract class AbstractSubmissionJuelFunction extends
   protected static Optional<FormDataWrapperDto> getFormDataFromStorageWithKey(String bpmnElementId,
       ExecutionEntity execution) {
     var startEventId = execution.getProcessDefinition().getInitial().getId();
-    var storageService = getBean(FormDataStorageService.class);
+    FormDataStorageService<?> storageService = getBean(FormDataStorageService.class);
     if (bpmnElementId.equals(startEventId)) {
       return storageService.getFormDataWithKey(getStartFormStorageKey());
     } else {

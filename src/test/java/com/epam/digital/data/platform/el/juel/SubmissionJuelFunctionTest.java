@@ -52,7 +52,7 @@ class SubmissionJuelFunctionTest {
   @Mock
   private ApplicationContext applicationContext;
   @Mock
-  private FormDataStorageService formDataStorageService;
+  private FormDataStorageService<?> formDataStorageService;
   @Mock
   private FormDataDto formDataDto;
   @Mock

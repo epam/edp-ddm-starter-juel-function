@@ -19,6 +19,8 @@ package com.epam.digital.data.platform.el.juel.it;
 import com.epam.digital.data.platform.storage.form.dto.FormDataDto;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import com.epam.digital.data.platform.storage.form.dto.FormDataInputWrapperDto;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests;
 import org.junit.jupiter.api.Test;
@@ -56,7 +58,12 @@ class SubmissionJuelFunctionIT extends BaseIT {
 
     var processInstance = runtimeService().startProcessInstanceByKey(processDefinitionKey, vars);
 
-    formDataStorageService().putFormData("testKey", FormDataDto.builder().data(formData).build());
+    var formDataInputWrapper =
+        FormDataInputWrapperDto.builder()
+            .key("testKey")
+            .formData(FormDataDto.builder().data(formData).build())
+            .build();
+    formDataStorageService().putFormData(formDataInputWrapper);
 
     String taskId = taskService().createTaskQuery().taskDefinitionKey(taskDefinitionKey)
         .singleResult().getId();

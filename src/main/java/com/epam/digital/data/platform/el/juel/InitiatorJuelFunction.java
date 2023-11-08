@@ -23,7 +23,6 @@ import com.epam.digital.data.platform.el.juel.dto.UserDto;
 import com.epam.digital.data.platform.starter.security.dto.JwtClaimsDto;
 import com.epam.digital.data.platform.storage.form.dto.FormDataDto;
 import com.epam.digital.data.platform.storage.form.service.FormDataStorageService;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.springframework.stereotype.Component;
 
@@ -97,7 +96,7 @@ public class InitiatorJuelFunction extends AbstractApplicationContextAwareJuelFu
   protected static Optional<FormDataDto> getFormDataFromStorage(String bpmnElementId,
                                                                 ExecutionEntity execution) {
     var startEventId = execution.getProcessDefinition().getInitial().getId();
-    var storageService = getBean(FormDataStorageService.class);
+    FormDataStorageService<?> storageService = getBean(FormDataStorageService.class);
     if (bpmnElementId.equals(startEventId)) {
       return storageService.getFormData(getStartFormStorageKey());
     } else {

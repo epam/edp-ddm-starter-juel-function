@@ -43,7 +43,7 @@ public abstract class BaseIT {
   @Autowired
   private TaskService taskService;
   @Autowired
-  private FormDataStorageService formDataStorageService;
+  private FormDataStorageService<?> formDataStorageService;
   @Autowired
   private MessagePayloadStorageService messagePayloadStorageService;
 
@@ -66,7 +66,7 @@ public abstract class BaseIT {
     return taskService;
   }
 
-  protected FormDataStorageService formDataStorageService() {
+  protected FormDataStorageService<?> formDataStorageService() {
     return formDataStorageService;
   }
 

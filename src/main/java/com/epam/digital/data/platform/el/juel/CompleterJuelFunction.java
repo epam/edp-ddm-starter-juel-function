@@ -90,7 +90,7 @@ public class CompleterJuelFunction extends AbstractApplicationContextAwareJuelFu
 
   private static Optional<String> getAccessTokenFromCeph(String taskDefinitionKey,
       String processInstanceId) {
-    var storageService = getBean(FormDataStorageService.class);
+    FormDataStorageService<?> storageService = getBean(FormDataStorageService.class);
     var formData = storageService.getFormData(taskDefinitionKey, processInstanceId);
     return formData.map(FormDataDto::getAccessToken);
   }
